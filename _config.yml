@@ -1,7 +1,7 @@
 # Site settings
 title: 艾伦.M
 email: wuwei.allenming@gmail.com
-description: Game Develpoer的人生感悟
+description: 我是艾伦，一名在帝都的U3D码农。在此记录下点点滴滴的人生感悟。
 baseurl: "" # the subpath of your site, e.g. /blog/
 url: "awAlive.top" # the base hostname & protocol for your site
 twitter_username: AlifeAw
@@ -12,6 +12,6 @@ markdown: kramdown
 
 paginate: 4
 
-author: Your name
+author: 艾伦
 
 gems: [jekyll-paginate]
