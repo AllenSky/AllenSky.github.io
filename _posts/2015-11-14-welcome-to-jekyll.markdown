@@ -4,7 +4,7 @@ title:  "Blog 开张"
 date:   2015-11-14 16:52:07
 categories: 个人
 tags: jekyll default
-image: /images/pic02.jpg
+image: /images/1/up.jpg
 ---
 ### 开张
 这是我在Github上的第一篇博客,也是我将近5年前搁笔的回归.5年时间,改变了很多.有了媳妇儿,孩子也即将降生.
