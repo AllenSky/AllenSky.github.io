@@ -1,10 +1,13 @@
 ---
 layout: post
-title:  "Blog 开张"
-date:   2015-11-14 16:52:07
-categories: 个人
-tags: 博客 个人
-image: /images/1/up.jpg
+title: Sample Post
+description: "GitHub Pages的第一篇博客"
+modified: 2015-12-11
+tags: [个人]
+image:
+  feature: abstract-3.jpg
+  credit: dargadgetz
+  creditlink: http://www.dargadgetz.com/ios-7-abstract-wallpaper-pack-for-iphone-5-and-ipod-touch-retina/
 ---
 ### 开张
 这是我在Github上的第一篇博客,也是我将近5年前搁笔的回归.5年时间,改变了很多.有了媳妇儿,孩子也即将降生.
