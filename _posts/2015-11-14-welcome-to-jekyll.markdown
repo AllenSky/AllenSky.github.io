@@ -7,9 +7,8 @@ tags: [个人]
 image:
   feature: 1/startup.jpg
   credit: dargadgetz
- creditlink: http://awalife.top/images/1/startup.jpg
+  creditlink: http://www.dargadgetz.com/ios-7-abstract-wallpaper-pack-for-iphone-5-and-ipod-touch-retina/
 ---
-###开张
 这是我在Github上的第一篇博客,也是我将近5年前搁笔的回归.5年时间,改变了很多.有了媳妇儿,孩子也即将降生.
 5年时间大部分在技术上,1年的Android,4年的Unity.能勉强算是个游戏开发者.
 	
