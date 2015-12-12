@@ -9,7 +9,7 @@ image:
   credit: dargadgetz
  creditlink: http://awalife.top/images/1/startup.jpg
 ---
-
+###开张
 这是我在Github上的第一篇博客,也是我将近5年前搁笔的回归.5年时间,改变了很多.有了媳妇儿,孩子也即将降生.
 5年时间大部分在技术上,1年的Android,4年的Unity.能勉强算是个游戏开发者.
 	
