@@ -2,7 +2,7 @@
 layout: page
 title: 关于艾伦.M
 image:
-  background: triangular.png
+  background: bg.jpg
 tags: [个人]
 comments: false
 modified: 2015-12-12
