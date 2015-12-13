@@ -35,13 +35,12 @@ modified: 2015-12-12
 
 ####艾伦.M's Works
 
-{% highlight html %}
 <figure class="half">
 	<img src="http://awalife.top/images/ereader.jpg" alt="Nook">
-	<img src="/images/ereader.jpg" alt="">
+	<img src="http://awalife.top/images/ereader.jpg" alt="">
 	<figcaption>Caption describing these two images.</figcaption>
 </figure>
-{% endhighlight %}
+
 
 
 
