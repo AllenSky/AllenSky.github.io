@@ -30,6 +30,8 @@ modified: 2015-12-12
 
 
 ###大智若愚，大道至简
+
+
 ###Stay Foolish, Stay Hungry
 
 
@@ -38,15 +40,18 @@ modified: 2015-12-12
 <figure class="third">
 	<img src="http://awalife.top/images/ereader.jpg" alt="Nook EReader">
 	<img src="http://awalife.top/images/coin.jpg" alt="Coin Push Android">
-	<figcaption>完成[电子书]中Reader的程序，[小熊推金币]Android Part.</figcaption>
+	<figcaption>完成电子书中Reader的程序，小熊推金币Android Part.</figcaption>
 </figure>
 
 <figure class="third">
 	<img src="http://awalife.top/images/dragonsummoner.jpg" alt="龙之召唤">
 	<img src="http://awalife.top/images/dragonball.png" alt="七龙珠">
 	<img src="http://awalife.top/images/Splashyantu.jpg" alt="Moba">
-	<figcaption>龙之召唤之[一]/[二]，[七龙珠]，[刀塔荣耀]</figcaption>
+	<figcaption>龙之召唤，七龙珠，刀塔荣耀</figcaption>
 </figure>
+
+
+Link: [电子书],[小熊推金币], 龙之召唤之[一]/[二]，[七龙珠]，[刀塔荣耀]
 
 [电子书]:http://www.barnesandnoble.com
 [小熊推金币]:http://baike.baidu.com/view/5981038.htm
