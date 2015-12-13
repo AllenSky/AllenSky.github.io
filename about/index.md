@@ -37,10 +37,10 @@ modified: 2015-12-12
 
 <figure class="half">
 	<img src="http://awalife.top/images/ereader.jpg" alt="Nook">
-	<img src="http://awalife.top/images/ereader.jpg" alt="">
-	<figcaption>Caption describing these two images.</figcaption>
+	<img src="http://awalife.top/images/coin.jpg" alt="">
+	<figcaption>电子书，小熊推金币.</figcaption>
 </figure>
 
 
-
-
+[电子书]:
+[小熊推金币]:
