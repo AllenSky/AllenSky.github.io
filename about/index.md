@@ -20,7 +20,7 @@ modified: 2015-12-12
 * 四分之一个Android研究者
 * 略知皮毛的IOS爱好者
 
-### 更是一名父亲，一个老公
+### 更是一个老公，一名父亲
 
 然
 
@@ -29,7 +29,19 @@ modified: 2015-12-12
 希望能与各位有缘人共勉
 
 
-###KEEP IT SIMPLE STUPID
+###大智若愚，大道至简
+###Stay Foolish, Stay Hungry
+
+
+####艾伦.M's Works
+
+{% highlight html %}
+<figure class="half">
+	<img src="http://awalife.top/images/ereader.jpg" alt="Nook">
+	<img src="/images/ereader.jpg" alt="">
+	<figcaption>Caption describing these two images.</figcaption>
+</figure>
+{% endhighlight %}
 
 
 
