@@ -44,13 +44,13 @@ modified: 2015-12-12
 <figure class="third">
 	<img src="http://awalife.top/images/dragonsummoner.jpg" alt="龙之召唤">
 	<img src="http://awalife.top/images/dragonball.png" alt="七龙珠">
-	<img src="http://awalife.top/Splashyantu.jpg" alt="Moba">
-	<figcaption>[龙之召唤之一]，[龙之召唤之二]，[七龙珠]，[刀塔荣耀]</figcaption>
+	<img src="http://awalife.top/images/Splashyantu.jpg" alt="Moba">
+	<figcaption>龙之召唤之[一]/[二]，[七龙珠]，[刀塔荣耀]</figcaption>
 </figure>
 
 [电子书]:http://www.barnesandnoble.com
 [小熊推金币]:http://baike.baidu.com/view/5981038.htm
-[龙之召唤之一]:http://ds.feiliu.com
-[龙之召唤之二]:http://l.cmge.com
+[一]:http://ds.feiliu.com
+[二]:http://l.cmge.com
 [七龙珠]:http://www.longzhu7.com
 [刀塔荣耀]:http://www.9game.cn/daotayingxiong/
