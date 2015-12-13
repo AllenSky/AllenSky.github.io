@@ -35,12 +35,12 @@ modified: 2015-12-12
 
 ####艾伦.M's Works
 
-<figure class="half">
+<figure class="third">
 	<img src="http://awalife.top/images/ereader.jpg" alt="Nook">
 	<img src="http://awalife.top/images/coin.jpg" alt="">
-	<figcaption>电子书，小熊推金币.</figcaption>
+	<figcaption>[电子书]，[小熊推金币].</figcaption>
 </figure>
 
 
-[电子书]:
-[小熊推金币]:
+[电子书]:http://www.barnesandnoble.com
+[小熊推金币]:http://baike.baidu.com/view/5981038.htm
