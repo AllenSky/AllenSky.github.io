@@ -66,10 +66,11 @@ tags: [Unity3D C# Optimize]
 
 3. 开启遮挡剔除。Unity本身就内建的功能，除此还可将不在显示范围内的特效全部关闭。不在显示区域，可以优化事情有很多，主要都放到服务端优化来说明。
 
-4. 战斗中同步加载资源会出现掉帧的想象。这个在Unity里面目前视乎没有好的解决方法，那怕你是用了LoadAsync，也有绕不过去的Instanciate这个同步方法。所以只能提前预加载，在进入战斗之前就准备好所有要展示的模型，而不是需要的时候再动态载入。这个原理简单，但是很多技能或者触发器或动态的创建某些东西，这个要预处理起来还是要费一番功夫的。Unity对Resources加载有很多黑盒子，如果你创建的东西，不再Camera显示区域，似乎Unity也并未加载资源，而是延迟等到Camera看见的时候才真正的加载，所以还得要特别的缩小预加载的资源（使肉眼不易察觉），让资源们在Camera下露一次眼。这点讨论的东西，和具体的Unity版本有关系，不排除将来不是这样了。
+4. 战斗中同步加载资源会出现掉帧的想象。这个在Unity里面目前视乎没有好的解决方法，那怕你是用了LoadAsync，也有绕不过去的Instanciate这个同步方法。所以只能提前预加载，在进入战斗之前就准备好所有要展示的模型，而不是需要的时候再动态载入。这个原理简单，但是很多技能或者触发器或动态的创建某些东西，这个要预处理起来还是要费一番功夫的。Unity对Resources加载有很多黑盒子，如果你创建的东西，不再Camera显示区域，似乎Unity也并未加载资源，而是延迟等到Camera看见的时候才真正的加载，所以还得要特别的缩小预加载的资源（使肉眼不易察觉），让资源们在Camera下露一次眼。声音的加载也同样绕不开，这里我们也是采用的预加载声音资源。预加载资源就必然绕不开缓存池，缓存池的技术。稍后在说。
+这点讨论的东西，和具体的Unity版本有关系，不排除将来不是这样了。
 
-4. 贴图。贴图能小勿大，光照贴图就更是了。贴图格式不要使用RGBA32，Android尽可能的使用ETC或RGBA16，IOS尽可能的使用PVRTC ARGB 4Bit或是PVRTC RGB 4Bit。告诉美术同学，能不要Alpha就绝不要Alpha。需要特别说明一点的是：Android opengl2.0 的ETC是不支持Alpha的，3.0支持，但目前市面上还有很多2.0的设备，那怎么办呢？可以用RGBA16，但RGBA16压缩质量不高，贴图的文件体积较大。所以我们可以自己写一个Shader，使用两个ETC格式的贴图，其中一个是原图，一个是Alpha图（Alpha图还能把尺寸再价低一点）合并为一个带有alpha的图。
-这里我是修改的NGUI的Shader为例，我们项目的UI使用的是NGUI搭建的。
+5. 贴图。贴图能小勿大，光照贴图就更是了。贴图格式不要使用RGBA32，Android尽可能的使用ETC或RGBA16，IOS尽可能的使用PVRTC ARGB 4Bit或是PVRTC RGB 4Bit。告诉美术同学，能不要Alpha就绝不要Alpha。需要特别说明一点的是：Android opengl2.0 的ETC是不支持Alpha的，3.0支持，但目前市面上还有很多2.0的设备，那怎么办呢？可以用RGBA16，但RGBA16压缩质量不高，贴图的文件体积较大。所以我们可以自己写一个Shader，使用两个ETC格式的贴图，其中一个是原图，一个是Alpha图（Alpha图还能把尺寸再价低一点）合并为一个带有alpha的图。
+这里已修改NGUI的Shader为例，我们项目的UI是使用NGUI搭建的。
 
 附上代码：
 
@@ -202,6 +203,86 @@ Shader "ETC_Alpha/NGUI/Unlit/Transparent Colored"
 
 
 ###优化之S端
+1. 对象池（Object Pool）。C/S的架构，决定两端需要依靠大量的消息来通讯。大量而重复使用的固定数量对象，可以使用对象池优化。对象池的使用，不仅仅在对C#对象上有效，再对资源也是有同样效果的。当然直接使用值类型也不会引发GC的大量发生。
+我这里附上C#的泛型Object Pool的代码。
+
+{% highlight css %}
+    /// <summary>
+	/// 所有使用对象池的对象都要继承此接口
+	/// </summary>
+	public interface IResetable {
+		void Reset();
+	}
+	
+	public class ObjectPool<T> : IAutoResize where T : class, IResetable, new() {
+		private Stack<T> m_objectStack;
+		private readonly int BUFFER_SIZE = 0;
+
+		public ObjectPool(int initialBufferSize)
+		{
+			BUFFER_SIZE = initialBufferSize;
+			m_objectStack = new Stack<T>(initialBufferSize);
+		}
+
+		#if DEBUG
+		public static int i = 0;
+		#endif
+
+		//返回数量
+		int Count {
+			get {
+				return m_objectStack.Count;
+			}
+		}
+
+		//重新调整数量
+		//当前数量2倍于初始时，会自动调整容量大小
+		public void AutoResize() {
+			int max = 2 * BUFFER_SIZE;
+			int cur = Count;
+			if(cur >= max) {
+				int loop = cur - BUFFER_SIZE;
+				int i = 0;
+
+				do {
+					m_objectStack.Pop();
+					i ++;
+				} while(i < loop);
+			}
+		}
+
+		public T New()
+		{
+			if (m_objectStack.Count > 0)
+			{
+				T t = m_objectStack.Pop();
+
+				if(t == null) t = new T();
+
+				t.Reset();
+
+				#if DEBUG
+				i ++;
+				#endif
+
+				return t;
+			}
+			else
+			{
+				T t = new T();
+
+				return t;
+			}
+		}
+
+		public void Store(T obj) {
+			if(obj == null) return;
+			m_objectStack.Push(obj);
+		}
+	}
+	
+{% endhighlight %}
+
 
 
 [怎样花两年时间去面试一个人]:http://mindhacks.cn/2011/11/04/how-to-interview-a-person-for-two-years/
