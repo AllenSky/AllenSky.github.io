@@ -65,18 +65,137 @@ tags: [Unity3D C# Optimize]
 3. 贴图。贴图能小勿大，光照贴图就更是了。贴图格式不要使用RGBA32，Android尽可能的使用ETC或RGBA16，IOS尽可能的使用PVRTC ARGB 4Bit或是PVRTC RGB 4Bit。告诉美术同学，能不要Alpha就绝不要Alpha。需要特别说明一点的是：Android opengl2.0 的ETC是不支持Alpha的，3.0支持，但目前市面上还有很多2.0的设备，那怎么办呢？可以用RGBA16，但RGBA16压缩质量不高，贴图的文件体积较大。所以我们可以自己写一个Shader，使用两个ETC格式的贴图，其中一个是原图，一个是Alpha图（Alpha图还能把尺寸再价低一点）合并为一个带有alpha的图。
 这里我是修改的NGUI的Shader为例，我们项目的UI使用的是NGUI搭建的。
 
-附上Shader的代码：
+附上代码：
 
 {% highlight css %}
-#container {
-    float: left;
-    margin: 0 -240px 0 0;
-    width: 100%;
+
+Shader "ETC+Alpha/NGUI/Unlit/Transparent Colored"
+{
+	Properties
+	{
+		_MainTex ("Base (RGB)", 2D) = "black" {}
+		_AlphaTex ("Trans (A)", 2D) = "white" {}
+	}
+	
+	SubShader
+	{
+		LOD 200
+
+		Tags
+		{
+			"Queue" = "Transparent"
+			"IgnoreProjector" = "True"
+			"RenderType" = "Transparent"
+		}
+		
+		Cull Off
+		Lighting Off
+		ZWrite Off
+		Fog { Mode Off }
+		Offset -1, -1
+		Blend SrcAlpha OneMinusSrcAlpha
+
+		Pass
+		{
+			CGPROGRAM
+				#pragma vertex vert
+				#pragma fragment frag
+				#pragma multi_compile R_CHANNEL G_CHANNEL B_CHANNEL
+				#include "UnityCG.cginc"
+	
+				struct appdata_t
+				{
+					float4 vertex : POSITION;
+					float2 texcoord : TEXCOORD0;
+					fixed4 color : COLOR;
+				};
+	
+				struct v2f
+				{
+					float4 vertex : SV_POSITION;
+					half2 texcoord : TEXCOORD0;
+					fixed4 color : COLOR;
+					fixed gray;
+				};
+	
+				sampler2D _MainTex;
+				sampler2D _AlphaTex;
+				float4 _MainTex_ST;
+
+				v2f vert (appdata_t v)
+				{
+					v2f o;
+					o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
+					o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
+					o.color = v.color;
+					o.gray = dot(v.color, fixed4(1,1,1,0));
+					return o;
+				}
+				
+				fixed4 frag (v2f i) : COLOR
+				{
+					fixed4 col;
+
+					col = tex2D(_MainTex, i.texcoord);
+
+					#if R_CHANNEL
+						col.a=tex2D(_AlphaTex, i.texcoord).r;
+					#elif G_CHANNEL
+						col.a=tex2D(_AlphaTex, i.texcoord).g;
+					#else
+						col.a=tex2D(_AlphaTex, i.texcoord).b;
+					#endif
+
+					if (i.gray == 0)  
+					{  
+			       		float _gray = dot(col.rgb, float3(0.299, 0.587, 0.114));
+			       		col.rgb = float3(_gray, _gray, _gray);
+					}  
+					else 
+					{
+						col = col * i.color;
+					}
+
+					return col;
+				}
+			ENDCG
+		}
+	}
+
+	SubShader
+	{
+		LOD 100
+
+		Tags
+		{
+			"Queue" = "Transparent"
+			"IgnoreProjector" = "True"
+			"RenderType" = "Transparent"
+		}
+		
+		Pass
+		{
+			Cull Off
+			Lighting Off
+			ZWrite Off
+			Fog { Mode Off }
+			Offset -1, -1
+			ColorMask RGB
+			Blend SrcAlpha OneMinusSrcAlpha
+			ColorMaterial AmbientAndDiffuse
+			
+			SetTexture [_MainTex]
+			{
+				Combine Texture * Primary
+			}
+		}
+	}
+	CustomEditor "ETCAlphaMaterialEditor"
 }
 
-CODE。。。
-
 {% endhighlight %}
+
+4. 
 
 [怎样花两年时间去面试一个人]:http://mindhacks.cn/2011/11/04/how-to-interview-a-person-for-two-years/
 [KISS]:https://en.wikipedia.org/wiki/KISS_principle
