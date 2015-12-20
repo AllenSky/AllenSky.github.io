@@ -69,7 +69,7 @@ tags: [Unity3D C# Optimize]
 
 {% highlight css %}
 
-Shader "ETC+Alpha/NGUI/Unlit/Transparent Colored"
+Shader "ETC_Alpha/NGUI/Unlit/Transparent Colored"
 {
 	Properties
 	{
@@ -190,7 +190,6 @@ Shader "ETC+Alpha/NGUI/Unlit/Transparent Colored"
 			}
 		}
 	}
-	CustomEditor "ETCAlphaMaterialEditor"
 }
 
 {% endhighlight %}
