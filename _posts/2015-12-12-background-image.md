@@ -56,13 +56,19 @@ tags: [Unity3D C# Optimize]
 再谈优化之前，还是要再说说战斗的模式。
 这个游戏的设计模式用的是不太标准的C/S模式（为啥不标准后面会提到，主要是为了提高非联网战斗的性能）。C端不负责任何逻辑，只负责战斗的表现，比如渲染场景，人物，动作，特效等。S端负责整个战斗的逻辑，比如AI，技能释放，场景事件等。C端一定是在手机设备上，S端可在手机上也可以在服务器上。
 
-优化之C端。C端的优化主要是资源上的优化。
+###优化之C端
 
-1. 根据目标机器的性能，设定定点数面数的要求，动画的骨骼数量。
+	C端的优化是资源上的优化
 
-2. 设置适当的特效。目前大部分的手机设备对于渲染Alpha都有负担，而且Alpha的范围越大（通常是特效范围大）机器的性能下降越是严重。
+1. 根据目标机器的性能，设定定点数面数的要求，动画的骨骼数量。这个在项目开始的时候就要有一个目标机器的范围。
 
-3. 贴图。贴图能小勿大，光照贴图就更是了。贴图格式不要使用RGBA32，Android尽可能的使用ETC或RGBA16，IOS尽可能的使用PVRTC ARGB 4Bit或是PVRTC RGB 4Bit。告诉美术同学，能不要Alpha就绝不要Alpha。需要特别说明一点的是：Android opengl2.0 的ETC是不支持Alpha的，3.0支持，但目前市面上还有很多2.0的设备，那怎么办呢？可以用RGBA16，但RGBA16压缩质量不高，贴图的文件体积较大。所以我们可以自己写一个Shader，使用两个ETC格式的贴图，其中一个是原图，一个是Alpha图（Alpha图还能把尺寸再价低一点）合并为一个带有alpha的图。
+2. 设置适当的特效。目前大部分的手机设备对于渲染Alpha都有负担，而且Alpha的范围越大（通常是特效范围大）机器的性能下降越是严重。检测机器的性能，根据性能开启高中低三档的效果。我发现大部分的android机器耗电都十分明显，尤其是显示的特效多了之后，感觉不仅耗电，性能下降还很严重。关于显示方面的profile，不仅有Unity的Profile，还有高通的[AdrenoProfiler]。[AdrenoProfiler]值得仔细研究。很多很多优化的知识都能在这里学习到。
+
+3. 开启遮挡剔除。Unity本身就内建的功能，除此还可将不在显示范围内的特效全部关闭。不在显示区域，可以优化事情有很多，主要都放到服务端优化来说明。
+
+4. 战斗中同步加载资源会出现掉帧的想象。这个在Unity里面目前视乎没有好的解决方法，那怕你是用了LoadAsync，也有绕不过去的Instanciate这个同步方法。所以只能提前预加载，在进入战斗之前就准备好所有要展示的模型，而不是需要的时候再动态载入。这个原理简单，但是很多技能或者触发器或动态的创建某些东西，这个要预处理起来还是要费一番功夫的。Unity对Resources加载有很多黑盒子，如果你创建的东西，不再Camera显示区域，似乎Unity也并未加载资源，而是延迟等到Camera看见的时候才真正的加载，所以还得要特别的缩小预加载的资源（使肉眼不易察觉），让资源们在Camera下露一次眼。这点讨论的东西，和具体的Unity版本有关系，不排除将来不是这样了。
+
+4. 贴图。贴图能小勿大，光照贴图就更是了。贴图格式不要使用RGBA32，Android尽可能的使用ETC或RGBA16，IOS尽可能的使用PVRTC ARGB 4Bit或是PVRTC RGB 4Bit。告诉美术同学，能不要Alpha就绝不要Alpha。需要特别说明一点的是：Android opengl2.0 的ETC是不支持Alpha的，3.0支持，但目前市面上还有很多2.0的设备，那怎么办呢？可以用RGBA16，但RGBA16压缩质量不高，贴图的文件体积较大。所以我们可以自己写一个Shader，使用两个ETC格式的贴图，其中一个是原图，一个是Alpha图（Alpha图还能把尺寸再价低一点）合并为一个带有alpha的图。
 这里我是修改的NGUI的Shader为例，我们项目的UI使用的是NGUI搭建的。
 
 附上代码：
@@ -194,7 +200,9 @@ Shader "ETC_Alpha/NGUI/Unlit/Transparent Colored"
 
 {% endhighlight %}
 
-4. 
+
+###优化之S端
+
 
 [怎样花两年时间去面试一个人]:http://mindhacks.cn/2011/11/04/how-to-interview-a-person-for-two-years/
 [KISS]:https://en.wikipedia.org/wiki/KISS_principle
@@ -208,3 +216,4 @@ Shader "ETC_Alpha/NGUI/Unlit/Transparent Colored"
 [ZeroMQ]:http://zeromq.org/
 [NetMQ]:https://github.com/somdoron/netmq
 [我]:wuwei.allenming@gmail.com
+[AdrenoProfiler]:https://developer.qualcomm.com/mobile-development/mobile-technologies/gaming-graphics-optimization-adreno/tools-and-resources
