@@ -41,6 +41,43 @@ tags: [Unity3D C# Optimize]
 
 这里我谈到的是大概念，后续会补充具体优化的方式和细节。
 
+
+-------------------------
+今天就让我们来考虑一下这种ARPG（或是Moba）的游戏优化方式。下图是我们公司正在封测的游戏.
+
+
+![Smaller icon](http://awalife.top/images/2/war.jpg)
+
+核心的战斗需求是支持多人联网相互PK（目前这个玩法没开放）。基于这个要求，决定采用[ZeroMQ]
+作为底层通讯层。[ZeroMQ]有诸多好处，抽象出多种网络数据传输方式，比如Publish Subscribe等...不用特别在意网络时序，比如服务器先启动，客户端再去链接这样的顺序，我这里就不一一列举了。同时，[ZGuide]作为Zero的文档，但也推荐每个开发人员都仔细研读，关于Socket的知识大都囊括。 
+
+但在Unity中使用[ZeroMQ]，必须编译出Android的SO库，IOS的.a库，Mac的.a库给UnityEditor。觉得较为麻烦，而且我觉得应该有C#的版本，果然google之后，我使用了[NetMQ]。[NetMQ]本身的质量还不错，也一直有人维护，但是PortToUnity之后还是有不会少问题，我也是在大量测试后基本上都修正了。（其实作为GitHub的收益者，没有把我修改的不少Bug， pull request到这些开源项目上，一直是我的遗憾）。如果同学想要这部分东西，可以单独邮件联系[我]。
+
+再谈优化之前，还是要再说说战斗的模式。
+这个游戏的设计模式用的是不太标准的C/S模式（为啥不标准后面会提到，主要是为了提高非联网战斗的性能）。C端不负责任何逻辑，只负责战斗的表现，比如渲染场景，人物，动作，特效等。S端负责整个战斗的逻辑，比如AI，技能释放，场景事件等。C端一定是在手机设备上，S端可在手机上也可以在服务器上。
+
+优化之C端。C端的优化主要是资源上的优化。
+
+1. 根据目标机器的性能，设定定点数面数的要求，动画的骨骼数量。
+
+2. 设置适当的特效。目前大部分的手机设备对于渲染Alpha都有负担，而且Alpha的范围越大（通常是特效范围大）机器的性能下降越是严重。
+
+3. 贴图。贴图能小勿大，光照贴图就更是了。贴图格式不要使用RGBA32，Android尽可能的使用ETC或RGBA16，IOS尽可能的使用PVRTC ARGB 4Bit或是PVRTC RGB 4Bit。告诉美术同学，能不要Alpha就绝不要Alpha。需要特别说明一点的是：Android opengl2.0 的ETC是不支持Alpha的，3.0支持，但目前市面上还有很多2.0的设备，那怎么办呢？可以用RGBA16，但RGBA16压缩质量不高，贴图的文件体积较大。所以我们可以自己写一个Shader，使用两个ETC格式的贴图，其中一个是原图，一个是Alpha图（Alpha图还能把尺寸再价低一点）合并为一个带有alpha的图。
+这里我是修改的NGUI的Shader为例，我们项目的UI使用的是NGUI搭建的。
+
+附上Shader的代码：
+
+{% highlight css %}
+#container {
+    float: left;
+    margin: 0 -240px 0 0;
+    width: 100%;
+}
+
+CODE。。。
+
+{% endhighlight %}
+
 [怎样花两年时间去面试一个人]:http://mindhacks.cn/2011/11/04/how-to-interview-a-person-for-two-years/
 [KISS]:https://en.wikipedia.org/wiki/KISS_principle
 [Unity3D]:https://unity3d.com/
@@ -50,3 +87,6 @@ tags: [Unity3D C# Optimize]
 [设计模式]:http://book.douban.com/subject/1052241/
 [Head First设计模式]:http://book.douban.com/subject/2243615/
 [reimport ui Assemblies]:http://issuetracker.unity3d.com/issues/unityengine-dot-ui-dot-dll-is-in-timestamps-but-is-not-known-in-guidmapper-dot-dot-dot-1
+[ZeroMQ]:http://zeromq.org/
+[NetMQ]:https://github.com/somdoron/netmq
+[我]:wuwei.allenming@gmail.com
