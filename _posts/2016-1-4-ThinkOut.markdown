@@ -10,19 +10,19 @@ tags: [Singleton]
 
 {% highlight css %}
 
-fskChoose          = ForthSkillChoose.Instance;
-pskChoose          = PublicSkillChoose.Instance;
-sixthSkChoose      = SixthSkillChoose.Instance;
-sixthSkillAdjustor = SixthSkillConfigAdjustor.Instance;
-awakenAdjustor     = AwakenConfigAdjustor.Instance;
-runeSkillAdjustor  = RuneSkillConfigAdjustor.Instance;
-suitAdjustor       = SuitSkillConfigAdjustor.Instance;
-talentSk           = TalentSkill.Instance;
-Statics       	    = StatictisInWar.instance;
+fskChoose         	= ForthSkillChoose.Instance;
+pskChoose          	= PublicSkillChoose.Instance;
+sixthSkChoose      	= SixthSkillChoose.Instance;
+sixthSkillAdjustor 	= SixthSkillConfigAdjustor.Instance;
+awakenAdjustor     	= AwakenConfigAdjustor.Instance;
+runeSkillAdjustor  	= RuneSkillConfigAdjustor.Instance;
+suitAdjustor      	= SuitSkillConfigAdjustor.Instance;
+talentSk           	= TalentSkill.Instance;
+Statics				= StatictisInWar.instance;
 StaticsHurt   	    = StatictisHurt.Instance;
 StaticsBeHurt 	    = StatictisBeHurt.Instance;
-StaticReco         = StatictisRecovery.Instance;
-StaticsDmg         = StaticsDmgReport.Instance;
+StaticReco         	= StatictisRecovery.Instance;
+StaticsDmg         	= StaticsDmgReport.Instance;
 
 {% endhighlight %}
 
