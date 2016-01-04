@@ -18,9 +18,9 @@ awakenAdjustor     	= AwakenConfigAdjustor.Instance;
 runeSkillAdjustor  	= RuneSkillConfigAdjustor.Instance;
 suitAdjustor      	= SuitSkillConfigAdjustor.Instance;
 talentSk           	= TalentSkill.Instance;
-Statics				= StatictisInWar.instance;
-StaticsHurt			= StatictisHurt.Instance;
-StaticsBeHurt 	    = StatictisBeHurt.Instance;
+Statics			= StatictisInWar.instance;
+StaticsHurt		= StatictisHurt.Instance;
+StaticsBeHurt 	    	= StatictisBeHurt.Instance;
 StaticReco         	= StatictisRecovery.Instance;
 StaticsDmg         	= StaticsDmgReport.Instance;
 
