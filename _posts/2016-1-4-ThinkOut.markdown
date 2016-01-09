@@ -2,7 +2,7 @@
 layout: post
 title: Unity3D之C#反思
 description: "Why is so bad about Singleton"
-tags: [Singleton]
+tags: [C# Singleton]
 ---
 使用Unity3D也已经大概有4年左右，C#方面也在使用中不断的熟悉。但单例模式的使用一直骨鲠在喉。
 下面是项目里的代码片段：
