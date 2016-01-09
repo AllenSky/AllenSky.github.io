@@ -6,6 +6,12 @@ tags: [Unity3D iOS Optimize]
 ---
 随着开发完成度的不断提高，终于能腾出一些时间。今年的愿望之一：翻译Unity Blog上的文档，学习Unity的同时也造福一下英语不太好的同学。这次打算翻译的是：[OPTIMIZING IOS APP SIZE WITH RESOURCE SLICING].
 
+开始之前来一个我们游戏的图
+
+![Smaller icon](http://awalife.top/images/4/bg.jpg)
+
+
+
 --------------
 ### OPTIMIZING IOS APP SIZE WITH RESOURCE SLICING
 
