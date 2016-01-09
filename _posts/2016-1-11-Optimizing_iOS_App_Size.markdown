@@ -16,7 +16,7 @@ tags: [Unity3D iOS Optimize]
 ### OPTIMIZING IOS APP SIZE WITH RESOURCE SLICING
 
 
-###<font color=DarkKhaki>通过资源切割方式优化IOS应用安装包体积</font>
+###通过资源切割方式优化IOS应用安装包体积
 
 App slicing is a new iOS feature available since iOS and tvOS version 9.0. It’s purpose is to reduce the size of the main application bundle by allowing developers to upload several device-dependent versions of resources to the App Store. Only one out of these is included in the App bundle for the device of the particular user.
 
