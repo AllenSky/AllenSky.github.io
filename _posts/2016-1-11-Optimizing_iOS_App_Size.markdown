@@ -1,10 +1,12 @@
 ---
 layout: post
-title: Unity3D系列之iOS App Size优化
+title: Unity3D系列之iOS App Size优化(1)
 description: "OPTIMIZING IOS APP SIZE WITH RESOURCE SLICING"
 tags: [Unity3D iOS Optimize]
 ---
 随着开发完成度的不断提高，终于能腾出一些时间。今年的愿望之一：翻译Unity Blog上的文档，学习Unity的同时也造福一下英语不太好的同学。这次打算翻译的是：[OPTIMIZING IOS APP SIZE WITH RESOURCE SLICING].
+
+参考姐妹篇[Unity3D系列之iOS App Size优化(2)]
 
 开始之前来一个我们游戏的图
 
@@ -84,9 +86,11 @@ var asset = bundle.LoadAsset("Asset");
 
 The easiest way to start exploring asset bundles and app resource slicing is to use our Asset Bundle Manager demo project, which is available on BitBucket. The landing page offers a comprehensible description of how to use and tweak the demo.
 
->最简单的方法开始使用asset bundles和app资源瘦身就是使用Asset Bundle Manager demo工程，它现在在BitBucket上。登陆页上有相近的描述如何使用和修改demo。
+>最简单的方法开始使用asset bundles和app资源瘦身就是使用Asset Bundle Manager demo工程，它现在在BitBucket上。登陆页上有详尽的描述如何使用和修改demo。
 
 貌似现在Unity官方文档还没有更多的描述，具体的也只能参考BitBucket demo。:(
 
+
+[Unity3D系列之iOS App Size优化(2)]:http://blogs.unity3d.com/cn/2015/12/28/optimizing-ios-app-size-with-resource-slicing/
 [OPTIMIZING IOS APP SIZE WITH RESOURCE SLICING]:http://blogs.unity3d.com/cn/2015/12/28/optimizing-ios-app-size-with-resource-slicing/
 
