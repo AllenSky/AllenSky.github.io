@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Unity3D系列之iOS App Size优化
-description: "Sample post with a background image CSS override."
+description: "OPTIMIZING IOS APP SIZE WITH RESOURCE SLICING"
 tags: [Unity3D iOS Optimize]
 ---
 随着开发完成度的不断提高，终于能腾出一些时间。今年的愿望之一：翻译Unity Blog上的文档，学习Unity的同时也造福一下英语不太好的同学。这次打算翻译的是：[OPTIMIZING IOS APP SIZE WITH RESOURCE SLICING].
