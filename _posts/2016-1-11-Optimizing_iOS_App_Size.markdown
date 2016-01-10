@@ -91,6 +91,6 @@ The easiest way to start exploring asset bundles and app resource slicing is to 
 貌似现在Unity官方文档还没有更多的描述，具体的也只能参考BitBucket demo。:(
 
 
-[Unity3D系列之iOS App Size优化(2)]:http://blogs.unity3d.com/cn/2015/12/28/optimizing-ios-app-size-with-resource-slicing/
+[Unity3D系列之iOS App Size优化(2)]:http://awalife.top/On_Demand_iOS/
 [OPTIMIZING IOS APP SIZE WITH RESOURCE SLICING]:http://blogs.unity3d.com/cn/2015/12/28/optimizing-ios-app-size-with-resource-slicing/
 
