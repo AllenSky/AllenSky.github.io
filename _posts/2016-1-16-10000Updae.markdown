@@ -5,7 +5,11 @@ description: "10000 Update() calls"
 tags: [Unity3D iOS Optimize]
 ---
 
+按照惯例先来一个我们游戏的宣传图
 
+![Smaller icon](http://awalife.top/images/6/guerdan.jpg) 
+
+----------------------
 Unity has so-called Messaging system which allows you to define a bunch of magic methods in your scripts which will be called at specific events while your game is running. This is a very simple and easy to understand concept especially good for new users. Just define an Update method like this and it will be called once a frame!
 
 >Unity拥有一个所谓的消息系统，它允许你在脚本里定义一些列魔幻函数，这些函数在事件发生时候被调用的。这是对Unity新手来说非常易于理解的概念。简单的定义Update方法，它就可每帧被调用一次。
