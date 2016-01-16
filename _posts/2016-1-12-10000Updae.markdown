@@ -1,0 +1,285 @@
+---
+layout: post
+title: Unity3D系列优化
+description: "10000 Update() calls"
+tags: [Unity3D iOS Optimize]
+---
+
+
+Unity has so-called Messaging system which allows you to define a bunch of magic methods in your scripts which will be called at specific events while your game is running. This is a very simple and easy to understand concept especially good for new users. Just define an Update method like this and it will be called once a frame!
+
+>Unity拥有一个所谓的消息系统，它允许你在脚本里定义一些列魔幻函数，这些函数在事件发生时候被调用的。这是对Unity新手来说非常易于理解的概念。简单的定义Update方法，它就可每帧被调用一次。
+
+{% highlight css %}
+
+void Update() {
+    transform.Translate(0, 0, Time.deltaTime);
+}
+
+{% endhighlight %}
+
+
+For an experienced developer this code is a bit odd. 
+1.It’s not clear how exactly this method is called.
+2.It’s not clear in what order these methods are called if you have several objects in a scene.
+3.This code style doesn’t work with intellisense.
+
+> 对于一个老练的开发者来说，这段代码有些奇特。
+1. 这个函数是如何被调用起来的。
+2. 如果你在一个场景里包含多个物体，执行顺序是怎么样的。
+3. 这代码风格也并不智能。
+
+#How Update is called（到底Update是如何被调用的）
+No, Unity doesn’t use System.Reflection to find a magic method every time it needs to call one.
+
+Instead, the first time a MonoBehaviour of a given type is accessed the underlying script is inspected through scripting runtime (either Mono or IL2CPP) whether it has any magic methods defined and this information is cached. If a MonoBehaviour has a specific method it is added to a proper list, for example if a script has Update method defined it is added to a list of scripts which need to be updated every frame.
+
+During the game Unity just iterates through these lists and executes methods from it — that simple. Also, this is why it doesn’t matter if your Update method is public or private.
+
+>记住，Unity每次执行的时候，不使用System.Reflection反射方式查找到函数并使用。
+
+>相反，当一个确定类型的MonoBehaviour第一次被访问的时候，Mono或IL2CPP运行时环境就会去检查隐含的信息，不论它是否包含魔幻函数，并且这些信息都被缓存起来。如果一个MonoBehaviour包含确定的方法，这个方法将会被加入到一个适合的List容器中，举例来说，一个脚本包含Update方法，那它就会被加入到一个每帧都执行的脚本List容器。
+
+>在游戏过程中，unity只是简单的枚举这些list并且执行方法。所以，这就是为为什么Update方法是公开还是私有的都没关系。
+
+#In what order Updates are executed（Update的执行顺序是怎么样的）
+
+The order is specified by Script Execution Order Settings (menu: Edit > Project Settings > Script Execution Order). It might be not the best way to manually set the order of 1000 scripts but if you want one script to be executed after all other ones this way is acceptable. Of course, in the future we want to have a more convenient way to specify execution order, using an attribute in code for example.
+
+> 脚本的执行顺序是根据设置里（菜单Edit > Project Settings > Script Execution Order）来决定的。这也许不是最好的方式去手动设置10000个脚本的执行顺序，但如果你只是将某个脚本放到其他脚本后面执行这个方法是可以被接受的。当然，我们将来想提供一个简便的方法去设置特定的执行顺序，举例来说可能使用Attribute吧。
+
+#It doesn’t work with intellisense（智能提示不好使）
+
+We all use an IDE of some sort to edit our C# scripts in Unity, most of them don’t like magic methods for which they can’t figure out where they are called, if at all. This leads to warnings and makes it harder to navigate the code.
+
+Sometimes developers add an abstract class extending MonoBehaviour, call it BaseMonoBehaviour or alike and make every script in their project extend this class. They put some basic useful functionality in it along with a bunch of virtual magic methods like so:
+
+> 在Unity里我们都是用一些IDE工具编辑C#代码，大部分都不喜欢这种魔幻函数，因为我们不直说如何被调用。这回产生警告，并且让艾玛更加难以浏览。
+
+>有时候，开发者添加一个抽象类去扩展MonoBehaviour，大约叫做BaseMonoBehaviour，并且以此为基类。开发者们会在基类里，留下基础有用的Virtual函数，比如：
+
+{% highlight css %}
+public abstract class BaseMonobehaviour : MonoBehaviour {
+    protected virtual void Awake() {}
+    protected virtual void Start() {}
+    protected virtual void OnEnable() {}
+    protected virtual void OnDisable() {}
+    protected virtual void Update() {}
+    protected virtual void LateUpdate() {}
+    protected virtual void FixedUpdate() {}
+}
+{% endhighlight %}
+
+This structure makes using MonoBehaviours in your code more logical but has one little flaw. I bet you already figured it out…
+
+All your MonoBehaviours will be in all update lists Unity uses internally, all these methods will be called each frame for all your scripts, mostly doing nothing at all!
+
+One might ask why should anyone care about an empty method? The thing is that these are the calls from native C++ land to managed C# land, they have a cost. Let’s see what this cost is.
+
+
+> 这种结构让MonoBehaviours在你的代码里显得更有逻辑但却有一点瑕疵。我打赌你已经注意到了。
+
+>unity会把所有你的MonoBehaviours都会被添加到update list里，这些方法都会被每帧调用，而根本都是什么都不做的空函数！
+
+>有人也许会问为什么会有人关心一个空方法？原因在月这些都是从C++空间到托管的C#空间，这会有损耗。让我们看看这损耗了什么。
+
+
+#Calling 10000 Updates （调用10000次Update）
+
+For this post I created a small example project which is available on Github. It has 2 scenes which can be changed by tapping on a device or pressing any key in editor:
+
+(1) In the first scene 10000 MonoBehaviours are created with this code inside:
+
+{% highlight css %}
+private void Update() {
+    i++;
+}
+{% endhighlight css %}
+
+>(1)为了这篇博客，我写了一个小的示例在GitHub上。它包含两个场景，在设备上轻点一下或在editor里按下任意键都会改变场景。
+
+(2) In the second scene another 10000 MonoBehaviours are created but instead of having an Update they have a custom UpdateMe method which is called by a manager script every frame like so:
+
+{% highlight css %}
+private void Update() {
+    var count = list.Count;
+    for (var i = 0; i < count; i++) list[i].UpdateMe();
+}
+{% endhighlight css %}
+
+>(2) 在另一个场景里，创建了10000 MonoBehaviour，但没有Update函数，相反却又一个UpdateMe的函数，这个函数通过一个管理器去每帧调用，就像示例那样：
+
+The test project was run on 2 iOS devices compiled to Mono and IL2CPP in non-Development mode in Release configuration. Time was measured as following:
+1.Set up a Stopwatch in the first Update called (configured in Script Execution Order),
+2.Stop the Stopwatch at LateUpdate,
+3.Average the timings over a few minutes.
+
+Unity version: 5.2.2f1
+ iOS version: 9.0
+
+>这个测试工程运行在两台设备上，分别采用非Development模式的Mono和IL2CPP编译，采用Release的配置。时间的采样使用如下方法：
+1. 在第一个Update调用的时候启动一个Stopwatch
+2. 在LateUpdate里关闭Stopwatch
+3. 在借些来的几分钟内计算平均时间
+
+Mono
+
+|         | iPhone 6           | iPhone 4s  |
+| ------------- |:-------------:| -----:|
+| Update        | 2.8ms         | 7.3ms |
+| Manage(List)  | 0.52ms      | 2.1ms |
+
+然后，切换到IL2CPP
+
+|         | iPhone 6           | iPhone 4s  |
+| ------------- |:-------------:| -----:|
+| Update        | 5.4ms         | 10.91ms |
+| Manage(List)  | 1ms      | 2.52ms |
+
+Here we see two things:
+
+1. This particular optimization still makes sense in IL2CPP.
+2. IL2CPP still has room for improvement and as I’m writing this post Scripting and IL2CPP teams are working hard to increase performance. For example the latest Scripting branch contains optimizations making the test run 35% faster.
+I’ll explain what Unity is doing under the hood in a few moments. But right now let’s change our Manager code to make it 5 times faster!
+
+> 我们可以发现两件事情：
+
+1. 对IL2CPP专门优化依然是可行的。
+2. IL2CPP依然有提高的攻坚，而且我正在编写这篇博客的代码给IL2CPP的团队，他们正努力的提高性能。举个例子来说，最新的脚本分支就包含了让测试速度提高35%的优化。我会解释Unity正在做改进。但是现在让我们改变我们的控制器代码，让它跑5倍速！
+
+#INTERFACE CALLS, VIRTUAL CALLS AND ARRAY ACCESS（接口调用，虚函数调用和数组访问）
+
+If you haven’t read [this great series of posts about IL2CPP internals] you should do it right after you finish reading this one!
+
+It turns out that if you’d wanted to iterate through a list of 10000 elements every frame you’d better use an array instead of a List because in this case generated C++ code is simpler and array access is just faster.
+
+In the next test I changed List<ManagedUpdateBehavior> to ManagedUpdateBehavior[].
+
+This looks much better!
+Update: I ran the test with array on Mono and got 0.23ms. 
+
+> 如果你还没有读过这些IL2CPP的博客，你应该在看完本篇博客后好好读一读。
+
+>结果告诉我们，如果你想每帧枚举一个10000元素的list，你最好使用数组而不是List。因为在这种情况下，生成的C++代码更加的简单，而且数组访问更快。
+
+>在下一个测试里，我将改变List<ManagedUpdateBehavior>为ManagedUpdateBehavior[].
+
+|         | iPhone 6           | iPhone 4s  |
+| ------------- |:-------------:| -----:|
+| Update        | 5.4ms         | 10.91ms |
+| Manage(List)  | 1ms      | 2.52ms |
+| Manage(array)  | 0.22ms      | 1.15ms |
+
+这看起来快多了！
+使用Mono，我得到的时间是0.23ms
+
+#INSTRUMENTS TO THE RESCUE!（使用Instruments来营救）
+
+We figured out that calling functions from C++ to C# is not fast, but let’s find out what Unity is actually doing when calling Updates on all these objects. The easiest way to do this is to use Time Profiler from Apple Instruments.
+
+
+>我们知道从C++调用C#不快，我们找出Unity在调用这些物体上的Updates到底做了什么。最简单的方法就是使用苹果的Time Profiler。
+
+Note that this is not a Mono vs. IL2CPP test — most of the things described further are also true for a Mono iOS build.
+
+>记住，我们这里不是Mono和IL2CPP的比较测试，大部分描述对Mono iOS也是正确的。
+
+I launched the test on iPhone 6 with Time Profiler, recorded a few minutes of data and selected a one minute interval to inspect. We are interested in everything starting from this line:
+void BaseBehaviourManager::CommonUpdate<BehaviourManager>()
+
+If you haven’t used Instruments before, on the right you see functions sorted by execution time and other functions they call. The most left column is CPU time in ms and % of these functions and functions they call combined, second left column is self execution time of the function. Note that since CPU wasn’t fully used by Unity during this experiment we see 10 seconds of CPU time spent on our Updates in a 60 seconds interval. Obviously we are interested in functions taking most time to execute.
+
+I used my mad Photoshop skills and color coded a few areas for you to better understand what’s going on.
+
+>我使用Time Profiler在iPhone 6上启动这个测试，记录下一些列时间数据，选出一分钟去看看。我们感兴趣的东西都从这号代码开始：
+
+>void BaseBehaviourManager::CommonUpdate<BehaviourManager>(）
+
+>如果你没使用过Instruments，图的右边你能看见根据执行时间排序的函数以及他们调用的函数。最左边的一栏是以ms和百分比为单位的CPU时间，这些时间包括他以及他调用其他函数的时间，昨天的第二栏是自己执行花费的时间。注意到，因为CPU不是完全的被Unity使用，这个实验中，我看到花费了10秒的CPU时间在Update，60秒在内部。很显然的，我们对花费最多时间去执行的函数感兴趣。
+
+
+>我用我牛逼的ps技术，加了点颜色让你们更加容易的理解。
+
+![Smaller icon](http://awalife.top/images/6/updates.png)
+
+
+![Smaller icon](http://awalife.top/images/6/pix11.png) UpdateBehavior.Update()
+
+In the middle you see our Update method or how IL2CPP calls it — UpdateBehavior_Update_m18. But before getting there Unity does a lot of other things.
+
+>在中间，你能看到Update的方法或者IL2CPP如何调用它-UpdateBehavior_Update_m18。但是在Unity执行到这儿，还有很多事情要做。
+
+
+![Smaller icon](http://awalife.top/images/6/pix21.png) Iterate over all Behaviours
+
+Unity goes over all Behaviours to update them. Special iterator class, SafeIterator, ensures that nothing breaks if someone decides to delete the next item on the list. Just iterating over all registered Behaviours takes 1517ms out of total 9979ms.
+
+>Unity遍历所有的Behaviours去更新他们。有一个特别的枚举器类，安全枚举器，保证不会有一些情况下删除下一个元素后不会被中断。仅仅枚举所有注册的Behaviours花费总时间9979ms中的1517ms。
+
+![Smaller icon](http://awalife.top/images/6/pix31.png) Check if the call is valid
+
+Next, Unity does a bunch of checks to make sure that it is calling a valid existing method on an active GameObject which has been initialized and its Start method called. You don’t want your game to crash if you destroy a GameObject during Update, do you? These checks take another 2188ms out of total 9979ms.
+
+>接下来，Unity做了很多检测以保证在一个活动的GameObject的update方法调用时是有效存在的，当然要保证初始化GameObject和调用他的Start函数。当你在Update销毁一个GameObject时，你不希望你的游戏会崩溃，对吧？这些花费了总时间9979ms中的2188ms
+
+
+![Smaller icon](http://awalife.top/images/6/pix41.png) Prepare to invoke the method
+
+Unity creates an instance of ScriptingInvocationNoArgs (which represents a call from native side to managed side) together with ScriptingArguments and orders IL2CPP virtual machine to invoke the method (scripting_method_invoke function). This step takes 2061ms out of total 9979ms.
+
+>Unity创建了一个ScriptingInvocationNoArgs（它代表了一个从本地层到托管层的调用）和ScriptingArguments的实例，命令IL2CPP虚拟机去调用这个方法（就是scripting_method_invoke）。这步花费总时间的9979ms的2061ms。
+
+![Smaller icon](http://awalife.top/images/6/pix51.png) Call the method
+
+scripting_method_invoke function checks that passed arguments are valid (900ms) and then calls Runtime::Invoke method of IL2CPP virtual machine (1520ms). First, Runtime::Invoke checks if such method exists (1018ms). Next, it calls a generated RuntimeInvoker function for method signature (283ms). It in turn calls our Update function which according to Time Profiler takes 42ms to execute.
+
+> scripting_method_invoke方法检查插入的参数合法性（900ms），通过IL2CPP虚拟机调用Runtime::Invoke方法（1520ms）。首先，Runtime::Invoke检测方法是存在的（1018ms）。接下来，它为了方法的签名调用了泛型的RuntimeInvoker函数（283ms）。它随后调用我们的Update方法，根据Time Profiler它花费了42ms去执行。
+
+And a nice colorful table.
+
+![Smaller icon](http://awalife.top/images/6/table5.png) 
+
+#MANAGED UPDATES
+
+Now let’s use Time Profiler with the manager test. You can see on the screenshot that there are the same methods (some of them take less than 1ms total so they are not even shown) but most of the execution time is actually going to UpdateMe function (or how IL2CPP calls it — ManagedUpdateBehavior_UpdateMe_m14). Plus, there’s a null check inserted by IL2CPP to make sure that the array we are iterating over is not null.
+
+The next image uses the same colors.
+
+>控制下的Updates
+
+>现在，我们使用Time Profiler去测试托管代码。你可以看到截图，它也有相同的方法（有一些花费的时间小于1ms所以忽略不显示了）但是大部分的执行时间是进入了UpdateMe函数（在IL2CPP中是ManagedUpdateBehavior_UpdateMe_m14）。另外，IL2CPP会插入一个判空检查为了保证数组遍历的时候不为空。
+
+>下图使用了相同颜色来标识。  
+
+![Smaller icon](http://awalife.top/images/6/manager.png) 
+
+So, what do you think now, should one care about a little method call?
+
+>所以，现在你怎么想，是否应该考虑一下方法的调用？
+
+A FEW WORDS ABOUT THE TEST
+
+To be honest, this test is not completely fair. Unity does a great job guarding you and your game from unintended behavior and crashes: Is this GameObject active? Wasn’t it destroyed during this update loop? Does Update method exist on the object? What to do with a MonoBehaviour created during this update loop? — my manager script doesn’t handle anything of that, it just iterates through a list of objects to update.
+
+In real world manager script probably would have been more complicated and slower to execute. But in this case I am the developer — I know what my code is supposed to do and I architect my manager class knowing what behavior is possible and what isn’t in my game. Unity unfortunately doesn’t possess such knowledge.
+
+
+>在多说几句
+
+>老实说，这次测试并不是完全公平的。Unity做了很棒的工作保证你和你的游戏不会出现奇怪的行为和崩溃：GameO是否活的？在Update循环时是否被删除了？Update方法是否在一个物体上？在Update循环时，一个MonoBehaviour创建是该做什么？我的控制代码什么都没做，它只是枚举出所有的物体去执行update.
+
+>在真实世界里的控制代码可能会比较复杂和缓慢的执行。但是在我这个情况下，我是开发者，我知道我的代码应该做什么，我架构我的控制器类，知道什么行为是会出现的，什么是不会的。但是Unity很不幸，它不知道这些。
+
+WHAT SHOULD YOU DO?
+
+Of course it all depends on your project, but in the field it’s not rare to see a game using a large number of GameObjects in the scene each executing some logic every frame. Usually it’s a little bit of code which doesn’t seem to affect anything, but when the number grows very large the overhead of calling thousands of Update methods starts to be noticeable. At this point it might already be too late to change the game’s architecture and refactor all these objects into manager pattern.
+
+You have the data now, think about it at the beginning of your next project.
+
+>你应该做什么？
+
+>当然都和你项目有关系，但是在某一方面，场景里很多GameObject毎帧执行逻辑还是不少见的。通常，这一小部分代码似乎不影响任何事情，但是当数量增长到很大的时候，调用成千的Update方法的负担就值得开始注意。也许现在知道的有点太晚，改变游戏架构，重构把所有的objects加入你的控制模式里。
+
+>现在你有了测试数据，想想怎么开始下一个项目。
+
+[this great series of posts about IL2CPP internals]:http://blogs.unity3d.com/2015/06/03/il2cpp-internals-method-calls/
