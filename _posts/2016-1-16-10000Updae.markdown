@@ -286,4 +286,7 @@ You have the data now, think about it at the beginning of your next project.
 
 >现在你有了测试数据，想想怎么开始下一个项目。
 
+
+其实，这篇博客告诉我们，在很多gameobjects的时候，如果自己去写一个控制器类去管理Awake，Start，Update等方法能换回很多性能。这不由的让我想起自己的项目，从来没有这样去管理，而且大量依赖了List，而不是Array。
+
 [this great series of posts about IL2CPP internals]:http://blogs.unity3d.com/2015/06/03/il2cpp-internals-method-calls/
