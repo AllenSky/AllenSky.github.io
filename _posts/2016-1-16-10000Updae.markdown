@@ -231,7 +231,7 @@ Next, Unity does a bunch of checks to make sure that it is calling a valid exist
 
 Unity creates an instance of ScriptingInvocationNoArgs (which represents a call from native side to managed side) together with ScriptingArguments and orders IL2CPP virtual machine to invoke the method (scripting_method_invoke function). This step takes 2061ms out of total 9979ms.
 
->Unity创建了一个ScriptingInvocationNoArgs（它代表了一个从本地层到托管层的调用）和ScriptingArguments的实例，命令IL2CPP虚拟机去调用这个方法（就是scripting_method_invoke）。这步花费总时间的9979ms的2061ms。
+>Unity创建了一个ScriptingInvocationNoArgs（它代表了一个从本地层到托管层的调用）和ScriptingArguments的实例，命令IL2CPP虚拟机去调用这个方法（就是scripting_method_invoke）。这步花费总时间9979ms中的2061ms。
 
 ![Smaller icon](http://awalife.top/images/6/pix51.png) Call the method
 
@@ -270,7 +270,7 @@ In real world manager script probably would have been more complicated and slowe
 
 >在多说几句
 
->老实说，这次测试并不是完全公平的。Unity做了很棒的工作保证你和你的游戏不会出现奇怪的行为和崩溃：GameO是否活的？在Update循环时是否被删除了？Update方法是否在一个物体上？在Update循环时，一个MonoBehaviour创建是该做什么？我的控制代码什么都没做，它只是枚举出所有的物体去执行update.
+>老实说，这次测试并不是完全公平的。Unity做了很棒的工作保证你和你的游戏不会出现奇怪的行为和崩溃：GameObject是否活的？在Update循环时是否被删除了？Update方法是否在一个物体上？在Update循环时，一个MonoBehaviour创建是该做什么？我的控制代码什么都没做，它只是枚举出所有的物体去执行update.
 
 >在真实世界里的控制代码可能会比较复杂和缓慢的执行。但是在我这个情况下，我是开发者，我知道我的代码应该做什么，我架构我的控制器类，知道什么行为是会出现的，什么是不会的。但是Unity很不幸，它不知道这些。
 
