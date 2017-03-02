@@ -13,7 +13,11 @@ tags: [Machine Learning coursera homework]
 
 ​	逐步更新中... 
 
+
+
 ## 第7周编程作业：
+
+第七周讲解的是SVM(support verctor machine)算法。选择合适的optimization objective的SVM被认为是一个最强大的“黑盒”学习算法，而且被广泛的使用。参考：[支持向量机通俗导论]
 
 ### gaussianKernal.m
 
@@ -300,3 +304,6 @@ end
 end
 
 ```
+
+
+[支持向量机通俗导论]http://blog.csdn.net/v_july_v/article/details/7624837
