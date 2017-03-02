@@ -306,4 +306,4 @@ end
 ```
 
 
-[支持向量机通俗导论]http://blog.csdn.net/v_july_v/article/details/7624837
+[支持向量机通俗导论]:http://blog.csdn.net/v_july_v/article/details/7624837
