@@ -1,5 +1,11 @@
-# 
-今天关注一下：C# Access Modifiers中的abstract和virtual
+---
+layout: post
+title: C# 杂记
+description: "C# 随想"
+tags: [C# 语法 design patten Threading Synchronization]
+---
+
+先关注：C# Access Modifiers中的abstract和virtual
 分别看msdn怎么说的。
 **[abstract (C# Reference)]** The abstract modifier indicates that the thing being modified has a missing or incomplete implementation. The abstract modifier can be used with classes, methods, properties, indexers, and events. Use the abstract modifier in a class declaration to indicate that a class is intended only to be a base class of other classes. Members marked as abstract, or included in an abstract class, must be implemented by classes that derive from the abstract class.
 
@@ -21,7 +27,140 @@ Abstract classes have the following features:
 
 ----------------
 
-再来简单说明一下工厂模式的作用：简单工厂模式，工厂方法模式，抽象工厂模式，IoC。 本质都是为在逐步不修改而只增加代码逻辑的基础上解决创建对象的问题。但我并不觉得一定是用更复杂的方法就是更好的，有时候简单工厂就能满足需求，为什么要写／引用IoC框架呢？**封装改变，既然要封装改变，自然也就要找到改变的代码，然后把会改变的代码用类来封装**，但是不改变的代码一定要封装吗？所以先实现，再根据需求的改变合适的重构代码才是一个更好的办法。
+再来简单说明一下工厂模式的作用：简单工厂模式，工厂方法模式，抽象工厂模式，IoC。 本质都是为在逐步不修改而只增加代码逻辑的基础上解决创建对象的问题。但我并不觉得一定是用更复杂的方法就是更好的，有时候简单工厂就能满足需求，为什么要写／引用IoC框架呢？**封装改变，就是封装会改变的需求（代码）**，但是不改变的代码一定要封装吗？所以先实现，再根据需求的改变合适的**重构**代码才是一个更好的办法，尤其在时间有限的情况下。
+
+----------------------------
+
+现在讨论一下Threading Synchronization锁的问题。
+
+用线程的好处自不必说，但是可能会带来的overhead却有必要提一下。
+
+Threads have space(memory consumption) and time(runtime execution performance) overhead associated with them.
+
+线程会有空间和时间的负担。
+
+- **Thread Kernal object** 
+
+  The Operating System allocates and initializes one of these data structures for each thread created in the system. The data structure contains lots of properties including what's called the thread's context. The context is a block of memory that contains a set of CPU's registers. For ARM CPU architecture, the thread's context uses approximately 350 bytes of memory.
+
+- **Thread environments block (TEB)**
+
+  The TEB is a block of memory allocated and initialized in user mode. The TEB consume 1 page of memory(4KB on X86,X64 and zARM CPUs) The TEB contains the head of thread's exception-handling chain. In additional, TEB also contains the thread local storage and some data structures for use by Graphic Device and OpenGL graphic.
+
+- **User-mode Stack**
+
+  The user-mode stack is used for local variables and arguments passed to method. It also contains the address indicating what the thread should excuted next when the current method return. By default, Windows allocate 1MB of memory of each thread.
+
+- **Kernel-mode Stack**
+
+  The kernel-model stack is used when application code passes arguments to a kernel-mode function in the operating system. The kernel-mode stack is 12KB when running on a 32-bit windows system and 24KB when running on a 64-bit windows system.
+
+- **Dll thread-attach and thread-detach notifications**
+
+  Windows has a policy that whenever a thread is created in a process, all unmanged DLLs loaded in that process have their Dll-Main method called, passing a DLL_THTREAD_ATTACH flag.
+
+以上是静态的消耗。动态的消耗在时间片完成后的现场切换。
+
+- Save the values in the CPU's registers to the currently running thread's context structure inside the thread's kernel object.
+- Select one thread from the set of existing threads to schedule next. If this thread is owned by another process, then windows must also switch the virtual address space seen by the CPU before it starts executing any code or touching any data.
+- Load the values in the selected thread's context structure into the CPU's registers.
+
+说完消耗，再来说一下线程同步锁的问题。
+
+- **The lock Keyword**
+
+  The C# locak statement can bu used to ensure that ablock of code runs to completion without interruption by other threads. This is accomplished by obtaining a mutual-exclusion lock for a given object for the duration of the code block.
+
+  A `lock` statement is given an object as an argument, and is followed by a code block that is to be executed by only one thread at a time. For example:
+
+  [C#]()
+
+  ```
+  public class TestThreading  
+  {  
+      private System.Object lockThis = new System.Object();  
+    
+      public void Process()  
+      {  
+    
+          lock (lockThis)  
+          {  
+              // Access thread-sensitive resources.  
+          }  
+      }  
+    
+  }  
+
+
+  ```
+
+  The argument provided to the `lock` keyword must be an object based on a reference type, and is used to define the scope of the lock. In the example above, the lock scope is limited to this function because no references to the object `lockThis` exist outside the function. If such a reference did exist, lock scope would extend to that object. Strictly speaking, the object provided is used solely to uniquely identify the resource being shared among multiple threads, so it can be an arbitrary class instance. In practice, however, this object usually represents the resource for which thread synchronization is necessary. For example, if a container object is to be used by multiple threads, then the container can be passed to lock, and the synchronized code block following the lock would access the container. As long as other threads locks on the same contain before accessing it, then access to the object is safely synchronized.
+
+  Generally, it is best to avoid locking on a `public` type, or on object instances beyond the control of your application. For example, `lock(this)` can be problematic if the instance can be accessed publicly, because code beyond your control may lock on the object as well. This could create deadlock situations where two or more threads wait for the release of the same object. Locking on a public data type, as opposed to an object, can cause problems for the same reason. Locking on literal strings is especially risky because literal strings are *interned* by the common language runtime (CLR). This means that there is one instance of any given string literal for the entire program, the exact same object represents the literal in all running application domains, on all threads. As a result, a lock placed on a string with the same contents anywhere in the application process locks all instances of that string in the application. As a result, it is best to lock a private or protected member that is not interned. Some classes provide members specifically for locking.
+
+- **Monitors**
+
+  Like the `lock` keyword, monitors prevent blocks of code from simultaneous execution by multiple threads. The [Enter](https://msdn.microsoft.com/zh-cn/library/de0542zz.aspx) method allows one and only one thread to proceed into the following statements; all other threads are blocked until the executing thread calls [Exit](https://msdn.microsoft.com/zh-cn/library/system.threading.monitor.exit.aspx). This is just like using the `lock` keyword.  For example:
+
+  [C#]()
+
+  ```
+  lock (x)  
+  {  
+      DoSomething();  
+  }  
+
+
+  ```
+
+  This is equivalent to:
+
+  [C#]()
+
+  ```
+  System.Object obj = (System.Object)x;  
+  System.Threading.Monitor.Enter(obj);  
+  try  
+  {  
+      DoSomething();  
+  }  
+  finally  
+  {  
+      System.Threading.Monitor.Exit(obj);  
+  }  
+
+
+  ```
+
+  Using the `lock`keyword is generally preferred over using the [Monitor](https://msdn.microsoft.com/zh-cn/library/system.threading.monitor.aspx) class directly, both because `lock` is more concise, and because `lock` insures that the underlying monitor is released, even if the protected code throws an exception. This is accomplished with the `finally` keyword, which executes its associated code block regardless of whether an exception is thrown.
+
+- **Mutex Object**
+
+  A *mutex* is similar to a monitor; it prevents the simultaneous execution of a block of code by more than one thread at a time. In fact, the name "mutex" is a shortened form of the term "mutually exclusive." Unlike monitors, however, a mutex can be used to synchronize threads across processes. A mutex is represented by the [Mutex](https://msdn.microsoft.com/zh-cn/library/system.threading.mutex.aspx) class.
+
+  When used for inter-process synchronization, a mutex is called a *named mutex* because it is to be used in another application, and therefore it cannot be shared by means of a global or static variable. It must be given a name so that both applications can access the same mutex object.
+
+  Although a mutex can be used for intra-process thread synchronization, using [Monitor](https://msdn.microsoft.com/zh-cn/library/system.threading.monitor.aspx) is generally preferred, because monitors were designed specifically for the .NET Framework and therefore make better use of resources. In contrast, the [Mutex](https://msdn.microsoft.com/zh-cn/library/system.threading.mutex.aspx) class is a wrapper to a Win32 construct. While it is more powerful than a monitor, a mutex requires interop transitions that are more computationally expensive than those required by the [Monitor](https://msdn.microsoft.com/zh-cn/library/system.threading.monitor.aspx) class. For an example of using a mutex, see [Mutexes](https://msdn.microsoft.com/zh-cn/library/hw29w7t1.aspx).
+
+- **Interlocked Class**
+
+  You can use the methods of the [Interlocked](https://msdn.microsoft.com/zh-cn/library/system.threading.interlocked.aspx) class to prevent problems that can occur when multiple threads attempt to simultaneously update or compare the same value. The methods of this class let you safely **increment, decrement, exchange, and compare** values from any thread.
+
+- **ReaderWriter Locks**
+
+  In some cases, you may want to lock a resource only when data is being written and permit multiple clients to simultaneously read data when data is not being updated. The [ReaderWriterLock](https://msdn.microsoft.com/zh-cn/library/system.threading.readerwriterlock.aspx) class enforces exclusive access to a resource while a thread is modifying the resource, but it allows non-exclusive access when reading the resource. ReaderWriter locks are a useful alternative to exclusive locks, which cause other threads to wait, even when those threads do not need to update data.
+
+  推荐使用ReaderWriterSlimLock
+
+- Synchronization Events and Wait Handles
+
+  Using a lock or monitor is useful for preventing the simultaneous execution of thread-sensitive blocks of code, but these constructs do not allow one thread to communicate an event to another. This requires *synchronization events*, which are objects that have one of two states, signaled and un-signaled, that can be used to activate and suspend threads. Threads can be suspended by being made to wait on a synchronization event that is unsignaled, and can be activated by changing the event state to signaled. If a thread attempts to wait on an event that is already signaled, then the thread continues to execute without delay.
+
+  There are two kinds of synchronization events: [AutoResetEvent](https://msdn.microsoft.com/zh-cn/library/system.threading.autoresetevent.aspx), and [ManualResetEvent](https://msdn.microsoft.com/zh-cn/library/system.threading.manualresetevent.aspx). They differ only in that [AutoResetEvent](https://msdn.microsoft.com/zh-cn/library/system.threading.autoresetevent.aspx) changes from signaled to unsignaled automatically any time it activates a thread. Conversely, a [ManualResetEvent](https://msdn.microsoft.com/zh-cn/library/system.threading.manualresetevent.aspx) allows any number of threads to be activated by its signaled state, and will only revert to an unsignaled state when its [Reset](https://msdn.microsoft.com/zh-cn/library/system.threading.eventwaithandle.reset.aspx) method is called.
+
+  Threads can be made to wait on events by calling one of the wait methods, such as [WaitOne](https://msdn.microsoft.com/zh-cn/library/58195swd.aspx), [WaitAny](https://msdn.microsoft.com/zh-cn/library/tdykks7z.aspx), or [WaitAll](https://msdn.microsoft.com/zh-cn/library/z6w25xa6.aspx). [WaitHandle.WaitOne](https://msdn.microsoft.com/zh-cn/library/system.threading.waithandle.waitone.aspx) causes the thread to wait until a single event becomes signaled, [WaitHandle.WaitAny](https://msdn.microsoft.com/zh-cn/library/system.threading.waithandle.waitany.aspx) blocks a thread until one or more indicated events become signaled, and [WaitHandle.WaitAll](https://msdn.microsoft.com/zh-cn/library/system.threading.waithandle.waitall.aspx) blocks the thread until all of the indicated events become signaled. An event becomes signaled when its [Set](https://msdn.microsoft.com/zh-cn/library/system.threading.eventwaithandle.set.aspx) method is called.
+
+  In the following example, a thread is created and started by the `Main` function. The new thread waits on an event using the [WaitOne](https://msdn.microsoft.com/zh-cn/library/system.threading.waithandle.waitone.aspx) method. The thread is suspended until the event becomes signaled by the primary thread that is executing the `Main` function. Once the event becomes signaled, the auxiliary thread returns. In this case, because the event is only used for one thread activation, either the [AutoResetEvent](https://msdn.microsoft.com/zh-cn/library/system.threading.autoresetevent.aspx) or [ManualResetEvent](https://msdn.microsoft.com/zh-cn/library/system.threading.manualresetevent.aspx) classes could be used.
 
 [abstract (C# Reference)]:https://msdn.microsoft.com/en-us/library/sf985hc5.aspx
 [virtual (C# Reference)]:https://msdn.microsoft.com/en-us/library/9fkccyh4.aspx
