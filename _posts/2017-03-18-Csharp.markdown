@@ -1,0 +1,27 @@
+# 
+今天关注一下：C# Access Modifiers中的abstract和virtual
+分别看msdn怎么说的。
+**[abstract (C# Reference)]** The abstract modifier indicates that the thing being modified has a missing or incomplete implementation. The abstract modifier can be used with classes, methods, properties, indexers, and events. Use the abstract modifier in a class declaration to indicate that a class is intended only to be a base class of other classes. Members marked as abstract, or included in an abstract class, must be implemented by classes that derive from the abstract class.
+
+Abstract说白了就是一个类**尚未完成实现**的关键字。
+
+**[virtual (C# Reference)]**  The virtual keyword is used to modify a method, property, indexer, or event declaration and allow for it to be overridden in a derived class
+
+Virtual不能对类标记，它表示的仅仅是一个可被修改的方法，属性，迭代器，消息。
+
+因为抽象类未完成，所以具有如下特征：
+Abstract classes have the following features:
+- [ ] An abstract class cannot be instantiated.
+- [ ] An abstract class may contain abstract methods and accessors.
+- [ ] It is not possible to modify an abstract class with the sealed modifier because the two modifiers have opposite meanings. The sealed modifier prevents a class from being inherited and the abstract modifier requires a class to be inherited.
+- [ ] A non-abstract class derived from an abstract class must include actual implementations of all inherited abstract methods and accessors.
+- [ ] An abstract method is implicitly a virtual method.
+- [ ] Abstract method declarations are only permitted in abstract classes.
+- [ ] Because an abstract method declaration provides no actual implementation, there is no method body; the method declaration simply ends with a semicolon and there are no curly braces ({ }) following the signature.
+
+----------------
+
+再来简单说明一下工厂模式的作用：简单工厂模式，工厂方法模式，抽象工厂模式，IoC。 本质都是为在逐步不修改而只增加代码逻辑的基础上解决创建对象的问题。但我并不觉得一定是用更复杂的方法就是更好的，有时候简单工厂就能满足需求，为什么要写／引用IoC框架呢？**封装改变，既然要封装改变，自然也就要找到改变的代码，然后把会改变的代码用类来封装**，但是不改变的代码一定要封装吗？所以先实现，再根据需求的改变合适的重构代码才是一个更好的办法。
+
+[abstract (C# Reference)]:https://msdn.microsoft.com/en-us/library/sf985hc5.aspx
+[virtual (C# Reference)]:https://msdn.microsoft.com/en-us/library/9fkccyh4.aspx
