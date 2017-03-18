@@ -5,8 +5,13 @@ description: "C# 随想"
 tags: [C# 语法 design patten Threading Synchronization]
 ---
 
+----------------------
+
 先关注：C# Access Modifiers中的abstract和virtual
+
 分别看msdn怎么说的。
+
+
 **[abstract (C# Reference)]** The abstract modifier indicates that the thing being modified has a missing or incomplete implementation. The abstract modifier can be used with classes, methods, properties, indexers, and events. Use the abstract modifier in a class declaration to indicate that a class is intended only to be a base class of other classes. Members marked as abstract, or included in an abstract class, must be implemented by classes that derive from the abstract class.
 
 Abstract说白了就是一个类**尚未完成实现**的关键字。
