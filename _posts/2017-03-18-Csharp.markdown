@@ -22,13 +22,13 @@ Virtual不能对类标记，它表示的仅仅是一个可被修改的方法，�
 
 因为抽象类未完成，所以具有如下特征：
 Abstract classes have the following features:
-- [ ] An abstract class cannot be instantiated.
-- [ ] An abstract class may contain abstract methods and accessors.
-- [ ] It is not possible to modify an abstract class with the sealed modifier because the two modifiers have opposite meanings. The sealed modifier prevents a class from being inherited and the abstract modifier requires a class to be inherited.
-- [ ] A non-abstract class derived from an abstract class must include actual implementations of all inherited abstract methods and accessors.
-- [ ] An abstract method is implicitly a virtual method.
-- [ ] Abstract method declarations are only permitted in abstract classes.
-- [ ] Because an abstract method declaration provides no actual implementation, there is no method body; the method declaration simply ends with a semicolon and there are no curly braces ({ }) following the signature.
+- An abstract class cannot be instantiated.
+- An abstract class may contain abstract methods and accessors.
+- It is not possible to modify an abstract class with the sealed modifier because the two modifiers have opposite meanings. The sealed modifier prevents a class from being inherited and the abstract modifier requires a class to be inherited.
+- A non-abstract class derived from an abstract class must include actual implementations of all inherited abstract methods and accessors.
+- An abstract method is implicitly a virtual method.
+- Abstract method declarations are only permitted in abstract classes.
+- Because an abstract method declaration provides no actual implementation, there is no method body; the method declaration simply ends with a semicolon and there are no curly braces ({ }) following the signature.
 
 ----------------
 
