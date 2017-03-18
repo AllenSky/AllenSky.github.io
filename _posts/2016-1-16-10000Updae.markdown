@@ -12,7 +12,7 @@ tags: [Unity3D iOS Optimize]
 ----------------------
 Unity has so-called Messaging system which allows you to define a bunch of magic methods in your scripts which will be called at specific events while your game is running. This is a very simple and easy to understand concept especially good for new users. Just define an Update method like this and it will be called once a frame!
 
->Unity拥有一个所谓的消息系统，它允许你在脚本里定义一些列魔幻函数，这些函数在事件发生时候被调用的。这是对Unity新手来说非常易于理解的概念。简单的定义Update方法，它就可每帧被调用一次。
+>Unity拥有一个所谓的消息系统，它允许你在脚本里定义一些列奇妙的函数，这些函数在事件发生时候被调用的。这是对Unity新手来说非常易于理解的概念。简单的定义Update方法，它就可每帧被调用一次。
 
 {% highlight css %}
 
@@ -33,7 +33,8 @@ For an experienced developer this code is a bit odd.
 2. 如果你在一个场景里包含多个物体，执行顺序是怎么样的。
 3. 这代码风格也并不智能。
 
-#How Update is called（到底Update是如何被调用的）
+#How Update is called（到底Update是如何被调用的
+
 No, Unity doesn’t use System.Reflection to find a magic method every time it needs to call one.
 
 Instead, the first time a MonoBehaviour of a given type is accessed the underlying script is inspected through scripting runtime (either Mono or IL2CPP) whether it has any magic methods defined and this information is cached. If a MonoBehaviour has a specific method it is added to a proper list, for example if a script has Update method defined it is added to a list of scripts which need to be updated every frame.
@@ -42,7 +43,7 @@ During the game Unity just iterates through these lists and executes methods fro
 
 >记住，Unity每次执行的时候，不使用System.Reflection反射方式查找到函数并使用。
 
->相反，当一个确定类型的MonoBehaviour第一次被访问的时候，Mono或IL2CPP运行时环境就会去检查隐含的信息，不论它是否包含魔幻函数，并且这些信息都被缓存起来。如果一个MonoBehaviour包含确定的方法，这个方法将会被加入到一个适合的List容器中，举例来说，一个脚本包含Update方法，那它就会被加入到一个每帧都执行的脚本List容器。
+>相反，当一个确定类型的MonoBehaviour第一次被访问的时候，Mono或IL2CPP运行时环境就会去检查隐含的信息，不论它是否包含那个巧妙的函数，并且这些信息都被缓存起来。如果一个MonoBehaviour包含确定的方法，这个方法将会被加入到一个适合的List容器中，举例来说，一个脚本包含Update方法，那它就会被加入到一个每帧都执行的脚本List容器。
 
 >在游戏过程中，unity只是简单的枚举这些list并且执行方法。所以，这就是为为什么Update方法是公开还是私有的都没关系。
 
@@ -58,7 +59,7 @@ We all use an IDE of some sort to edit our C# scripts in Unity, most of them don
 
 Sometimes developers add an abstract class extending MonoBehaviour, call it BaseMonoBehaviour or alike and make every script in their project extend this class. They put some basic useful functionality in it along with a bunch of virtual magic methods like so:
 
-> 在Unity里我们都是用一些IDE工具编辑C#代码，大部分都不喜欢这种魔幻函数，因为我们不直说如何被调用。这回产生警告，并且让艾玛更加难以浏览。
+> 在Unity里我们都是用一些IDE工具编辑C#代码，大部分都不喜欢这种奇妙的函数，因为我们不直说如何被调用。这回产生警告，并且让艾玛更加难以浏览。
 
 >有时候，开发者添加一个抽象类去扩展MonoBehaviour，大约叫做BaseMonoBehaviour，并且以此为基类。开发者们会在基类里，留下基础有用的Virtual函数，比如：
 
@@ -114,8 +115,11 @@ private void Update() {
 >(2) 在另一个场景里，创建了10000 MonoBehaviour，但没有Update函数，相反却又一个UpdateMe的函数，这个函数通过一个管理器去每帧调用，就像示例那样：
 
 The test project was run on 2 iOS devices compiled to Mono and IL2CPP in non-Development mode in Release configuration. Time was measured as following:
+
 1.Set up a Stopwatch in the first Update called (configured in Script Execution Order),
+
 2.Stop the Stopwatch at LateUpdate,
+
 3.Average the timings over a few minutes.
 
 Unity version: 5.2.2f1
@@ -211,7 +215,7 @@ I used my mad Photoshop skills and color coded a few areas for you to better und
 
 In the middle you see our Update method or how IL2CPP calls it — UpdateBehavior_Update_m18. But before getting there Unity does a lot of other things.
 
->在中间，你能看到Update的方法或者IL2CPP如何调用它-UpdateBehavior_Update_m18。但是在Unity执行到这儿，还有很多事情要做。
+>在中间，你能看到Update的方法或者IL2CPP如何调用它-UpdateBehavior_Update_m18。但是在Unity执行到这儿，做了非常多的事情。
 
 
 ![Smaller icon](http://awalife.top/images/6/pix21.png) Iterate over all Behaviours
