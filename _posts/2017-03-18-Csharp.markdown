@@ -80,7 +80,7 @@ Threads have space(memory consumption) and time(runtime execution performance) o
 
   [C#]()
 
-  ```
+  {% highlight css %}
   public class TestThreading  
   {  
       private System.Object lockThis = new System.Object();  
@@ -95,9 +95,7 @@ Threads have space(memory consumption) and time(runtime execution performance) o
       }  
     
   }  
-
-
-  ```
+  {% endhighlight css %}
 
   The argument provided to the `lock` keyword must be an object based on a reference type, and is used to define the scope of the lock. In the example above, the lock scope is limited to this function because no references to the object `lockThis` exist outside the function. If such a reference did exist, lock scope would extend to that object. Strictly speaking, the object provided is used solely to uniquely identify the resource being shared among multiple threads, so it can be an arbitrary class instance. In practice, however, this object usually represents the resource for which thread synchronization is necessary. For example, if a container object is to be used by multiple threads, then the container can be passed to lock, and the synchronized code block following the lock would access the container. As long as other threads locks on the same contain before accessing it, then access to the object is safely synchronized.
 
@@ -109,20 +107,20 @@ Threads have space(memory consumption) and time(runtime execution performance) o
 
   [C#]()
 
-  ```
+  {% highlight css %}
   lock (x)  
   {  
       DoSomething();  
   }  
 
 
-  ```
+  {% endhighlight css %}
 
   This is equivalent to:
 
   [C#]()
 
-  ```
+  {% highlight css %}
   System.Object obj = (System.Object)x;  
   System.Threading.Monitor.Enter(obj);  
   try  
@@ -135,7 +133,7 @@ Threads have space(memory consumption) and time(runtime execution performance) o
   }  
 
 
-  ```
+  {% endhighlight css %}
 
   Using the `lock`keyword is generally preferred over using the [Monitor](https://msdn.microsoft.com/zh-cn/library/system.threading.monitor.aspx) class directly, both because `lock` is more concise, and because `lock` insures that the underlying monitor is released, even if the protected code throws an exception. This is accomplished with the `finally` keyword, which executes its associated code block regardless of whether an exception is thrown.
 
