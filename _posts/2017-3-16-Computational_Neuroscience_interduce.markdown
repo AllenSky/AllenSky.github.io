@@ -7,7 +7,7 @@ tags: [计算神经科学 Computational Neuroscience]
 
 ----------------------
 
-![Smaller icon](http://awalife.top/images/8/theoretical_neuroscience.png)
+![Smaller icon](http://awalife.top/images/8/theoretical_neuroscience.jpeg)
 
 参考书的封面
 
