@@ -1,9 +1,10 @@
 ---
 layout: post
-title: Stack based vs Register based Virtual Machine
-description: "Stack Register VM"
-tags: [Virtual Machine VM]
+title: AN INTRODUCTION TO IL2CPP INTERNALS
+description: "AN INTRODUCTION TO IL2CPP INTERNALS"
+tags: [IL2CPP Unity]
 ---
 
+----------------------
 
-
+**What is IL2CPP?**
