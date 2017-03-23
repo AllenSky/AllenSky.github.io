@@ -1,7 +1,7 @@
 ---
 layout: post
-title: AN INTRODUCTION TO IL2CPP INTERNALS
-description: "AN INTRODUCTION TO IL2CPP INTERNALS"
+title: Devirtualization
+description: "Optimazation Devirtualization"
 tags: [IL2CPP Unity]
 ---
 
