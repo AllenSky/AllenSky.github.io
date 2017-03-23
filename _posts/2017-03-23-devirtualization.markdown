@@ -1,9 +1,6 @@
 ---
 layout: post
-title: IL2CPP OPTIMIZATIONS: DEVIRTUALIZATION
-description: "IL2CPP OPTIMIZATIONS: DEVIRTUALIZATION"
+title: AN INTRODUCTION TO IL2CPP INTERNALS
+description: "AN INTRODUCTION TO IL2CPP INTERNALS"
 tags: [IL2CPP Unity]
 ---
-
-----------------------
-
