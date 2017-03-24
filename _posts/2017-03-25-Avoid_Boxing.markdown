@@ -1,4 +1,11 @@
-IL2CPP Optimizations:Avoid Boxing
+---
+layout: post
+title: IL2CPP Optimizations:Avoid Boxing
+description: "Optimazation Avoid Boxing"
+tags: [IL2CPP Unity Boxing]
+---
+
+----------------------
 
 ### **Heap allocations are slow**(申请堆内存很慢)
 
