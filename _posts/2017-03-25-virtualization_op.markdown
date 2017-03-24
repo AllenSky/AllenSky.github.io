@@ -7,7 +7,7 @@ tags: [IL2CPP Unity optimizations]
 
 ----------------------
 
-这篇文章给我最大的想法是：“executing no code is better than executing some code.” 不做任何无关事情是最好的。化繁为简。回想起来之前的做变灰的shader，应该把shader分成两份，变灰和不变灰，因为GPU对分枝预测能力比CPU要弱的多，话费的代价也更大。
+这篇文章给我最大的想法是：“executing no code is better than executing some code.” 不做任何无关事情是最好的。化繁为简。回想起来之前的做变灰的shader，应该把shader分成两份，变灰和不变灰，不需要有便会的时候因为GPU对分枝预测能力比CPU要弱的多，花费的代价也更大。
 
 ------------
 
