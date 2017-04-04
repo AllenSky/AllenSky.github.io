@@ -145,3 +145,23 @@ Manually combining GameObjects that are close to each other can be a very good a
 
 手动合并相近的物体是一个很好的选择。比如，有过个抽屉的静态橱柜通常合并为一个mesh是好想法，要么通过3D软件要么使用Mesh.CombineMeshes方法。
 
+### GPU instancing
+
+You can use GPU instancing to draw many identical objects with only a few draw calls. There are some restrictions that you need to bear in mind:
+
+- Your identical objects need to share the same Mesh and the same Material. You can, however, add per-instance data. See [Adding per-instance data](https://docs.unity3d.com/Manual/#AddingPerInstanceData) below for more information.
+- The MeshRenderer component and Graphics.DrawMesh API are supported.
+- GPU instancing is available on the following platforms:
+  - Windows: DX11 and DX12 with SM 4.0 and above / OpenGL 4.1 and above
+  - OS X and Linux: OpenGL 4.1 and above
+  - Mobile: OpenGL ES 3.0 and above / Metal
+  - PlayStation 4
+  - Xbox One
+
+使用GPU instancing，只需要很少的draw call就能绘制许多相同的物体。你必须在脑子里有这些限制：
+
+- 相同物体需要共享同样的mesh和相同的材质。但是，你可以给每个实例添加数据。
+
+- 支持MeshRenderer组件和Graphics.DrawMesh API。
+
+  ​
