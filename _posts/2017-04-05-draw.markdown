@@ -165,3 +165,13 @@ You can use GPU instancing to draw many identical objects with only a few draw c
 - 支持MeshRenderer组件和Graphics.DrawMesh API。
 
   ​
+
+**Graphical improvements: procedural instancing **
+
+The GPU instancing introduced in 5.4 and 5.5 allows you to draw many instances of the same mesh using an instanced shader in a single draw call, while still allowing a per-instance data set, including position, rotation and color. When the CPU is the factor limiting your framerate, instancing can provide a significant performance benefit. To enable instancing on the Standard Shader, tick the Enable Instancing checkbox on the material settings. Alternatively, you can manually add instancing support to your own shaders.
+
+In 5.6 we now support Procedural Instancing, where instance data is supplied via a custom source in the Shader, rather than from Material Property Blocks and Support for DrawMeshInstancedIndirect, where draw arguments are supplied from a ComputeBuffer. This new way of rendering instances via script has almost no CPU overhead, resulting in a massive performance boost, assuming the CPU is the limiting factor for your framerate.
+
+The GPU instancing 在5.4和5.5时开放给大家，它允许你在instanced shader只使用一个draw call就能绘制许多有着相同mesh的物体，但同时仍然允许修改每个实例的数据，比如位置，旋转和颜色。当CPU是限制游戏帧数的因素时，instancing可明显提升性能。标准shader可在勾选框中开启，自己的shader则需要添加instancing的支持。
+
+— 这一段没看明白。
