@@ -1,4 +1,12 @@
-# Compiler options
+---
+layout: post
+title: IL2CPP Compile Option
+description: "IL2CPP Compile Option"
+tags: [IL2CPP Unity Compile]
+---
+
+----------------------
+# Compiler options IL2CPP编译时选项
 
 When using the [IL2CPP](https://docs.unity3d.com/Manual/IL2CPP.html) scripting backend, it is possible to control how **il2cpp.exe** generates C++ code. Specifically, C# attributes can be used to enable or disable the following runtime checks listed below.
 
