@@ -20,7 +20,7 @@ When using the [IL2CPP](https://docs.unity3d.com/Manual/IL2CPP.html) scripting b
 
 The runtime checks can be enabled or disabled in C# code using the `Il2CppSetOptions` attribute. To use this attribute, find the *Il2CppSetOptionsAttribute.cs* source file in the *IL2CPP* directory in the Unity Editor installation on your computer. (*Data\il2cpp* on Windows, *Contents/Frameworks/il2cpp* on OS X). Copy this source file into the *Assets* folder in your project. 
 
-运行时检查可以通过C#的`Il2CppSetOptions`属性来开启或关闭。为了使用这个属性，可在 *Data\il2cpp* on Windows, *Contents/Frameworks/il2cpp* on OS X的路径上找到Il2CppSetOptionsAttribute.cs文件。把此文件拷贝到你的工程的Assets目录下。
+运行时检查可以通过C#的*Il2CppSetOptions*属性来开启或关闭。为了使用这个属性，可在 *Data\il2cpp* on Windows, *Contents/Frameworks/il2cpp* on OS X的路径上找到Il2CppSetOptionsAttribute.cs文件。把此文件拷贝到你的工程的Assets目录下。
 
 Now use the attribute as in hte example below.
 
@@ -33,9 +33,9 @@ public static string MethodWithNullChecksDisabled()
 }
 ```
 
-You can apply `Il2CppSetOptions` attribute to types, methods, and properties. Unity uses the attribute from the most local scope.
+You can apply *Il2CppSetOptions*attribute to types, methods, and properties. Unity uses the attribute from the most local scope.
 
-你可以把 `Il2CppSetOptions`属性放到类型，方法和属性（properties）上。Unity使用本地最近的attribute属性。
+你可以把 *Il2CppSetOptions*属性放到类型，方法和属性（properties）上。Unity使用本地最近的attribute属性。
 
 ```
 [Il2CppSetOption(Option.NullChecks, false)]
