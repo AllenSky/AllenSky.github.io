@@ -36,7 +36,7 @@ Directional lights are very useful for creating effects such as sunlight in your
 
 它非常适合用来创造太阳光的效果。平行光可被认为是一个无穷远的光源，所以在Unity里平行光的Transform的Position没有实际的作用，你怎么改变都是一样的效果，因为理论上平行光是无穷远处。同时所有场景里的物体都会被照射，而且光的强度也不会减弱。
 
-![image](http://amgoodlife.top/images/14/image1505552050_29358.svg)
+![image](http://amgoodlife.top/images/14/image1505552050_29358.png)
 
 Directional lights represent large, distant sources that come from a position outside the range of the game world. In a realistic scene, they can be used to simulate the sun or moon. In an abstract game world, they can be a useful way to add convincing shading to objects without exactly specifying where the light is coming from. 
 
@@ -51,7 +51,7 @@ By default, every new Unity scene contains a Directional Light. In Unity 5, this
 
 An Area Light is defined by a rectangle in space. Light is emitted in all directions uniformly across their surface area, but only from one side of the rectangle. There is no manual control for the range of an Area Light, however intensity will diminish at inverse square of the distance as it travels away from the source. Since the lighting calculation is quite processor-intensive, area lights are not available at runtime and can only be baked into lightmaps. 
 区域光是定义一块区域内向各个方向发射，但是仅限于一面。强度是根据距离平方的倒数减少。因为光照计算是想到耗费处理器的，所以arealight是非运行时生效的，仅能烘培到光照贴图。
-![image](http://amgoodlife.top/images/14/image1505558523_5705.svg)
+![image](http://amgoodlife.top/images/14/image1505558523_5705.png)
 
 Since an area light illuminates an object from several different directions at once, the shading tends to be more soft and subtle than the other light types. You might use it to create a realistic street light or a bank of lights close to the player. A small area light can simulate smaller sources of light (such as interior house lighting) but with a more realistic effect than a point light.
 因为区域光会同时从多个角度照射一个物体，所以阴影会显得更加的柔和。当距离玩家近处的街灯，可以创建区域光来产生更加真实的效果。
