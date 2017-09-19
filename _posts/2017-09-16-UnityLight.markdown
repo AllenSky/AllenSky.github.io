@@ -8,7 +8,7 @@ tags: [Light Unity 3D]
 
 Unity5较之于Unity4有非常大提升，包括有Physically Based Shading(也有叫做Physically Based Rendering), 引进了Precomputed Realtime Global illumination(简称PRGI). 本文关注PRGI，如果想了解PBS(PBR)，请看这里。
 
-首先咱们要了解Lighting有哪些种类(Types of light)：
+对于灯光，首先咱们要了解Lighting有哪些种类(Types of light)，这是最基础的部分：
 1. **Point lights 点光源**
   A point light is located at a point in space and sends light out in all directions equally. The direction of light hitting a surface is the line from the point of contact back to the center of the light object. The intensity diminishes with distance from the light, reaching zero at a specified range. Light intensity is inversely proportional to the square of the distance from the source. This is known as ‘inverse square law’ and is similar to how light behaves in the real world.
   大致表达的意思是：点光源向周围各个方向均等的发射出光。电光源需要定义出一个照射范围（影响区域）光的强度遵循距离平方的倒数，且再Range距离上为0.
@@ -77,4 +77,117 @@ Ambient light is light that is present all around the scene and doesn’t come f
 
 
 
----------------------------------------------------------------- 未完待续 -------------------------------------------------------------------------
+---------------------------------------------------------------- Rendering Path -----------------------------------------------------------------
+
+**Rendering Path**
+
+在进一步介绍Unity光照之前，还是有必要来了解一下：*Rendering Path*。所谓Rendering Path就是指在渲染场景中光照的渲染方式，目前Unity支持的有*Legacy Vertext Lit*(No Support for RealtimeShadows) ,*Forward Rendering*,*Deferred Rendering*(Not Supported by mobile)
+
+目前这三种Rendering Path，需要的系统以及硬件的支持都不同。下图是具体的（请大家自动忽略**Legacy Deferred**，Unity5不支持这种方式）
+
+![image](http://amgoodlife.top/images/14/RenderPathComparison.png)
+
+
+
+**Vertex lit**
+Vertex Lit即顶点光照，顾名思义， 就是所有的光照计算都是在顶点进行的，因此所有的像素运算效果都不支持，如阴影，法线贴图，light cookies等。一个物体一般只有一个pass。效果最差，运行最快。适合老设备或者一般的移动设备。这里也需要注意下面：
+
+> ## Vertex Lit Rendering path
+>
+> **Since vertex lighting is most often used on platforms that do not support programmable shaders, Unity can't create multiple shader permutations internally to handle lightmapped vs. non-lightmapped cases. So to handle lightmapped and non-lightmapped objects, multiple passes have to be written explicitly.**
+>
+> - `Vertex` pass is used for non-lightmapped objects. All lights are rendered at once, using a fixed function OpenGL/Direct3D lighting model ([Blinn-Phong](http://en.wikipedia.org/wiki/Blinn-Phong_shading))
+> - `VertexLMRGBM` pass is used for lightmapped objects, when lightmaps are RGBM encoded (this happens on most desktops and consoles). No realtime lighting is applied; pass is expected to combine textures with a lightmap.
+> - `VertexLMM` pass is used for lightmapped objects, when lightmaps are double-LDR encoded (this happens on mobiles and old desktops). No realtime lighting is applied; pass is expected to combine textures with a lightmap.
+
+Vertex Lit多数被用于固定管线Shader，所以不能通过代码逻辑来处理带烘培贴图和不带烘培贴图的情况。Unity 在使用 Vertex lit 模式时无法在内部自动分别处理使用了光照图的对象和未使用的，所以需要作者自己显式的针对 Vertex, VertexLMRGBM, VertexLMM 这三个 LightMode 的 PassTag 分别写一个 Pass，以便适应没有光照图，以及使用了光照图但编码不同的情况。
+
+
+
+------------------------------------ 插入Fixed Pipline和programmable Pipeline的介绍 -----------------------------------
+
+另外这里还要进一步介绍一下固定管线和可编程管线的区别到底如何。
+
+首先Fixed Pipline和programmable Pipeline都是可以通过写代码来控制的。只不过固定渲染管线是指：可配置（configurable）的管线，实现不同效果就好像在电路中打开不同的开关。这个时候的API比较典型的都是这样的:
+
+![image](http://amgoodlife.top/images/14/fixedaip.jpg)
+
+可以看出来，这就是让大家花式扳开关的节奏.
+
+但是大家的欲望是无限的，这么有限的扳开关的模式，渲染的效果实在是不理想，后来大家就把模式换成了流水线上坐着几个工人（Shader），然后给工人下命令（可编程）的方式了，这样的话只要工人忙得过来，那我就可以自己定义各种光照模型，贴图方式了，程序员的可发挥空间就大得多了。
+
+固定管线时就像下面这样花式设参数:
+
+![image](http://amgoodlife.top/images/14/FixedPiplineParameter.jpg)
+
+到了可编程的时代就可以自己写代码来设置各种光照模型了：
+
+![image](http://amgoodlife.top/images/14/ProgrammablePipline.jpg)
+
+------------------------------------结束Fixed Pipline和programmable Pipeline的介绍 -----------------------------------
+
+
+
+
+
+**Forward Rendering**
+
+是绝大数引擎都含有的一种渲染方式。要使用Forward Rendering，一般在Vertex Shader或Fragment Shader阶段对每个顶点或每个像素进行光照计算，并且是对每个光源进行计算产生最终结果。下面是Forward Rendering的核心伪代码[1]。
+
+``` 
+	For each light: 
+		For each object affected by the light: 
+			framebuffer += object * light
+```
+
+具体在Unity中，有它自己的实现规则：
+
+In Forward Rendering, some number of brightest lights that affect each object are rendered in fully per-pixel lit mode. Then, up to 4 point lights are calculated per-vertex. The other lights are computed as Spherical Harmonics (SH), which is much faster but is only an approximation. Whether a light will be a per-pixel light or not is dependent on this:
+
+- Lights that have their Render Mode set to **Not Important** are always per-vertex or SH.
+- Brightest directional light is always per-pixel.
+- Lights that have their Render Mode set to **Important** are always per-pixel.
+- If the above results in less lights than current **Pixel Light Count** [Quality Setting](https://docs.unity3d.com/Manual/class-QualitySettings.html), then more lights are rendered per-pixel, in order of decreasing brightness.
+
+Rendering of each object happens as follows:
+
+- Base Pass applies one per-pixel directional light and all per-vertex/SH lights.
+- Other per-pixel lights are rendered in additional passes, one pass for each light. 
+
+ Unity会挑选出影响物体最亮的光（对于不同物体，最亮的光也许不同），可能是4个(A是在Base Pass，BCD在 Additional Pass)，会逐像素渲染。然后是接着较亮的4个光用于逐顶点渲染，剩下的光则被用于球面调和渲染（近似处理），下图圆圈（表示一个Geometry），进行Forward Rendering处理。
+
+![img](http://amgoodlife.top/images/14/ForwardLightsExample.png)
+
+将得到下面的处理结果：
+
+![img](http://amgoodlife.top/images/14/ForwardLightsClassify.png) 
+
+对于ABCD四个光源我们在Fragment Shader中我们对每个pixel处理光照，对于DEFG光源我们在Vertex Shader中对每个vertex处理光照，而对于GH光源，我们采用球谐光照（SH）函数进行处理。注意这些灯光组会重叠，这是为了减少“Light Popping”（应该是减少光的跳跃）
+
+**Forward Rendering优缺点**
+
+很明显，对于Forward Rendering，光源数量对计算复杂度影响巨大，所以比较适合户外这种光源较少的场景（一般只有太阳光）。
+
+但是对于多光源，我们使用Forward Rendering的效率会极其低下。因为如果在vertex shader中计算光照，其复杂度将是 ，而如果在fragment shader中计算光照，其复杂度为 。可见光源数目和复杂度是成线性增长的。
+
+对此，我们需要进行必要的优化。比如
+
+- 1.多在vertex shader中进行光照处理，因为有一个几何体有10000个顶点，那么对于n个光源，至少要在vertex shader中计算10000n次。而对于在fragment shader中进行处理，这种消耗会更多，因为对于一个普通的1024x768屏幕，将近有8百万的像素要处理。所以如果顶点数小于像素个数的话，尽量在vertex shader中进行光照。
+- 2.如果要在fragment shader中处理光照，我们大可不必对每个光源进行计算时，把所有像素都对该光源进行处理一次。因为每个光源都有其自己的作用区域。比如点光源的作用区域是一个球体，而平行光的作用区域就是整个空间了。对于不在此光照作用区域的像素就不进行处理。但是这样做的话，CPU端的负担将加重，因为要计算作用区域。
+- 3.对于某个几何体，光源对其作用的程度是不同，所以有些作用程度特别小的光源可以不进行考虑。典型的例子就是Unity中只考虑重要程度最大的4个光源。
+
+下面介绍一下Forward Rendering的Pass
+
+**Base Pass**
+
+Base pass renders object with one per-pixel directional light and all SH/vertex lights. This pass also adds any lightmaps, ambient and emissive lighting from the shader. Directional light rendered in this pass can have Shadows. Note that Lightmapped objects do not get illumination from SH lights.
+
+Note that when “OnlyDirectional” [pass flag](https://docs.unity3d.com/Manual/SL-PassTags.html) is used in the shader, then the forward base pass only renders main directional light, ambient/lightprobe and lightmaps (SH and vertex lights are not included into pass data).
+
+Base Pass使用一个逐像素的平行光和其他逐顶点或球调和的光渲染物体。在这个Pass里会加载lightmap,环境光和自发光。平行光在此能有阴影。注意使用了Lightmap的物体在不会受到SH（球谐光照）光的影响。注意如果标注了“OnlyDirectional”标记的则只会使用平行光，环境光，探照灯和光照贴图（SH（球谐光照）光和逐顶点的光不会被计算）。
+
+**Additional passes**
+
+Additional passes are rendered for each additional per-pixel light that affect this object. Lights in these passes by default do not have shadows (so in result, Forward Rendering supports one directional light with shadows), unless *multi_compile_fwdadd_fullshadows* variant shortcut is used.
+
+Additional passes会逐步把影响这个物体的逐光照的灯渲染物体。默认情况下不会产生影子，除非开启*multi_compile_fwdadd_fullshadows*。
