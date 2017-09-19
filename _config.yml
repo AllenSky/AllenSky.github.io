@@ -1,11 +1,11 @@
 title:            艾伦.M
 description:      一个生活在帝都的码农,在此记录下人生的感悟
-disqus_shortname: awalife.top
+disqus_shortname: amgoodlife.top
 reading_time:     true
 words_per_minute: 200
 # Your site's domain goes here (eg: //mmistakes.github.io, http://mademistakes.com, etc)
 # When testing locally leave blank or use http://localhost:4000
-url: http://awalife.top
+url: http://amgoodlife.top
 
 # Owner/author information
 owner:
