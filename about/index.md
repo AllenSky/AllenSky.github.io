@@ -38,15 +38,15 @@ modified: 2015-12-12
 ####艾伦.M's Works
 
 <figure class="third">
-	<img src="http://awalife.top/images/ereader.jpg" alt="Nook EReader">
-	<img src="http://awalife.top/images/coin.jpg" alt="Coin Push Android">
+	<img src="http://amgoodlife.top/images/ereader.jpg" alt="Nook EReader">
+	<img src="http://amgoodlife.top/images/coin.jpg" alt="Coin Push Android">
 	<figcaption>完成电子书中Reader的程序，小熊推金币Android Part.</figcaption>
 </figure>
 
 <figure class="third">
-	<img src="http://awalife.top/images/dragonsummoner.jpg" alt="龙之召唤">
-	<img src="http://awalife.top/images/dragonball.png" alt="七龙珠">
-	<img src="http://awalife.top/images/Splashyantu.jpg" alt="Moba">
+	<img src="http://amgoodlife.top/images/dragonsummoner.jpg" alt="龙之召唤">
+	<img src="http://amgoodlife.top/images/dragonball.png" alt="七龙珠">
+	<img src="http://amgoodlife.top/images/Splashyantu.jpg" alt="Moba">
 	<figcaption>龙之召唤，七龙珠，刀塔荣耀</figcaption>
 </figure>
 
