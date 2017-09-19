@@ -7,7 +7,7 @@ tags: [计算神经科学 Computational Neuroscience]
 
 ----------------------
 
-![Smaller icon](http://awalife.top/images/8/theoretical_neuroscience.jpeg)
+![Smaller icon](http://amgoodlife.top/images/8/theoretical_neuroscience.jpeg)
 
 参考书的封面
 
@@ -33,7 +33,7 @@ Neural Encoding refers to map from stimulus to response.这里介绍了axons and
 
 **[depolarization]** is a change within a cell, during which the cell undergoes a shift in electric charge distribution, resulting in less negative charge inside the cell. Depolarization is essential to the function of many cells, communication between cells, and the overall physiology of an organism.
 
-![Smaller icon](http://awalife.top/images/8/1221_Action_Potential.jpeg)
+![Smaller icon](http://amgoodlife.top/images/8/1221_Action_Potential.jpeg)
 
 [Coursera]:https://www.coursera.org
 [Hyperpolarization]:https://en.wikipedia.org/wiki/Hyperpolarization_(biology)

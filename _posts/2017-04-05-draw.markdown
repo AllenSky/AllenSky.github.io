@@ -16,7 +16,7 @@ Before digging deeper into cases when Unity starts a new batch, let’s talk abo
 
 在开始深挖何时Unity开始一个新的batch，我们先聊聊什么是batch和batching。
 
-![Smaller icon](http://awalife.top/images/13/image02_3.png)
+![Smaller icon](http://amgoodlife.top/images/13/image02_3.png)
 
 ### Batch
 

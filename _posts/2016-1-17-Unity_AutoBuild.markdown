@@ -7,7 +7,7 @@ tags: [Unity3D iOS Android Compile AutoBuild]
 
 按照惯例先来一个我们游戏的宣传图
 
-![Smaller icon](http://awalife.top/images/7/yilidan.jpg) 
+![Smaller icon](http://amgoodlife.top/images/7/yilidan.jpg) 
 
 虽然Unity提供里Editor，用可视化的方式编译出Apk（Eclipse工程）或是Xcode工程，但是对于一个复杂的项目而言，还是不太方便的，尤其是面对中国不计其数的第三方市场，配置编译选项和不同渠道插件是一件闹心的事情。所以，用脚本去配置好一次，以后每次打包（尤其是出大量的渠道包）就不会每次恶心。
 

@@ -35,17 +35,17 @@ Suppose we are happily writing code, avoiding unnecessary heap allocations and b
 
 我们正开心的写代码呢，避免不必要的堆内存申请和装箱。
 
-![Smaller icon](http://awalife.top/images/12/hassize.png)
+![Smaller icon](http://amgoodlife.top/images/12/hassize.png)
 
 Elsewhere in our code, we have this convenient method to sum up the size of many things (including possibly Treeobjects):
 
-![Smaller icon](http://awalife.top/images/12/totalsize.png)
+![Smaller icon](http://amgoodlife.top/images/12/totalsize.png)
 
 This looks safe enough, but let’s peer into a little bit of the Intermediate Language (IL) code that the C# compiler generates:
 
 然后我们看一下C#编译器生成的IL代码。
 
-![Smaller icon](http://awalife.top/images/12/il.png)
+![Smaller icon](http://amgoodlife.top/images/12/il.png)
 
 The C# compiler has implemented the if (things[i] != null) check using boxing! If the type T is already a reference type, then the box opcode is pretty cheap – it just returns the existing pointer to the array element. But if type T is a value type (like our Tree type), then that box opcode is *very* costly. Of course, value types can never be null, so why do we need to implement the check in the first place? And what if we need to compute the size of one hundred Tree objects, or maybe one thousand Tree objects? That unnecessary boxing will quickly become *very*important.
 
@@ -61,7 +61,7 @@ C#编译器需要提供一个为各种类型T都通用的实现，所以才陷�
 
 当T是Tree类型时，IL2CPP会TotalSize<T> 函数对生成一个实现。下面就是生成的C++代码：
 
-![Smaller icon](http://awalife.top/images/12/newil.png)
+![Smaller icon](http://amgoodlife.top/images/12/newil.png)
 
 IL2CPP recognized that the box opcode is unnecessary for a value type, because we can prove ahead of time that a value type object will never be null. In a tight loop, this removal of an unnecessary allocation and copy of data can have a significant positive impact on performance.
 

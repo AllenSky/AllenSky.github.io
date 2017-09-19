@@ -12,7 +12,7 @@ Unity Blog翻译篇之 MASTERING ON-DEMAND RESOURCES FOR APPLE PLATFORMS
 
 开始之前来一个我们游戏的图
 
-![Smaller icon](http://awalife.top/images/5/bg.jpg)
+![Smaller icon](http://amgoodlife.top/images/5/bg.jpg)
 
 
 --------------
@@ -110,7 +110,7 @@ Several Unity games utilizing on-demand resources have been already shipped on A
 
 >已经有几个登录Apple TV的Unity游戏使用了**随需应变资源**技术。他们在[这里]和[这里2].
 
-[Unity3D系列之iOS App Size优化(1)]:http://awalife.top/Optimizing_iOS_App_Size/
+[Unity3D系列之iOS App Size优化(1)]:http://amgoodlife.top/Optimizing_iOS_App_Size/
 [MASTERING ON-DEMAND RESOURCES FOR APPLE PLATFORMS]:http://blogs.unity3d.com/cn/2015/11/26/mastering-on-demand-resources-for-apple-platforms/
 [Asset Bundles]:https://unity3d.com/learn/tutorials/topics/scripting/assetbundles-and-assetbundle-manager
 [BitBucket]:https://bitbucket.org/Unity-Technologies/assetbundledemo

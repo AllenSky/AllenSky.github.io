@@ -33,7 +33,7 @@ il2cpp.exe能把托管程序集生成平台相关的C++代码。
 
 You can think about the IL2CPP toolchain like this:
 
-![Smaller icon](http://awalife.top/images/9/il2cpp-toolchain-smaller.png)
+![Smaller icon](http://amgoodlife.top/images/9/il2cpp-toolchain-smaller.png)
 
 **The runtime library**
 

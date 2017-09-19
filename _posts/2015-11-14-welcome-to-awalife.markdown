@@ -24,11 +24,11 @@ image:
 
 有了域名，那就要域名解析.域名解析在购买域名的服务商都有现成的服务，问题在于需要一个固定公网IP地址，才能把域名绑定上.有固定IP的人来说，可以让一台电脑24小时跑来当服务器，但各种突发问题，比如停电，网络线路维修...也挺麻烦的. 况且对于一般老百姓在家里上网是没有固定公网IP的，找一个云服务商是个不错的选择. 我简单看了一下阿里云,一年最少230,太贵了.目前应该也不需要这么多的流量和硬件. 所以在网上找了一圈，免费的[GitHub Pages]作为博客是个更经济的选择,而且GitHub作为码农的我是最合适体现格调.
 
-![Smaller icon](http://awalife.top/images/1/aliyun.png)
+![Smaller icon](http://amgoodlife.top/images/1/aliyun.png)
 
 [GitHub]是软件仓库,其中还有非常多的著名开源项目.如果想在[GitHub Pages]上愉快的玩耍,熟悉[Git]命令是少不了的, 但是[GitHub]有一个可视化的[Git]前端.
 
-![Smaller icon](http://awalife.top/images/1/github_client.png)
+![Smaller icon](http://amgoodlife.top/images/1/github_client.png)
 
 虽然web不是我工作方向,但好歹我是计算机科班出身.折腾这些应该比不少文科生要容易的多.比如[1] 和 [2]. 英语没问题的话，最好还是直接按照[官方]指导来的最准确.我最后是按照[官方]文档搭建起来的.需要说明的是，[GitHub Pages]有两种建站方式.
 

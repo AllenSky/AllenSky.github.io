@@ -59,7 +59,7 @@ A stack based virtual machine implements the general features described as neede
 
 一个基于栈的虚拟机实现了上面说的那些通用要点，但是操作数的内存结构式以栈方式存储的。计算操作是通过pop获取数据，处理完后再把结锅push进栈，即LIFO。在栈虚拟机里，加法操作经常是按下面方式做的：
 
-![Smaller icon](http://awalife.top/images/10/stackadd_thumb.png)
+![Smaller icon](http://amgoodlife.top/images/10/stackadd_thumb.png)
 
 1. **POP 20**
 2. **POP 7**
@@ -76,7 +76,7 @@ In the register based implementation of a virtual machine, the data structure wh
 
 在基于寄存器实现的虚拟机，存储操作数的数据结构是基于CPU的寄存器结构的。没有Push和Pop的操作，但是指令集却都必须包含操作数的地址。这就是说，指令包含里操作数明确地址，不像基于栈虚拟机需要一个栈指针。举例来说，如果一个加法操作使用寄存器虚拟机，那么指令结构就会想下面这样：
 
-![Smaller icon](http://awalife.top/images/10/registeradd_thumb.png)
+![Smaller icon](http://amgoodlife.top/images/10/registeradd_thumb.png)
 
 1. **ADD R1, R2, R3** **;**        # Add contents of R1 and R2, store result in R3
 

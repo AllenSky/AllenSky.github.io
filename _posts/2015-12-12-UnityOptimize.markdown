@@ -46,7 +46,7 @@ tags: [Unity3D C# Optimize]
 今天就让我们来考虑一下这种ARPG（或是Moba）的游戏优化方式。下图是我们公司正在封测的游戏.
 
 
-![Smaller icon](http://awalife.top/images/2/war.jpg)
+![Smaller icon](http://amgoodlife.top/images/2/war.jpg)
 
 核心的战斗需求是支持多人联网相互PK（目前这个玩法没开放）。基于这个要求，决定采用[ZeroMQ]
 作为底层通讯层。[ZeroMQ]有诸多好处，抽象出多种网络数据传输方式，比如Publish Subscribe等...不用特别在意网络时序，比如服务器先启动，客户端再去链接这样的顺序，我这里就不一一列举了。同时，[ZGuide]作为Zero的文档，但也推荐每个开发人员都仔细研读，关于Socket的知识大都囊括。 
@@ -289,7 +289,7 @@ Shader "ETC_Alpha/NGUI/Unlit/Transparent Colored"
    但是这样依然会有峰值的出现，因为大量NPC可能在同一帧执行AI。故要将NPC AI的执行打散在不同帧之间，以此保证帧率的稳定。
    
 3. 在二维平面内(虽然是3D游戏，但是战斗中却没有用到高度这个参数)，索敌引发对大量NPC之间的逻辑运算。而且很多很显然相距很远的NPC是不应该参与运算的。假定我们有N个NPC，那么就会产生N^N次相互的索敌AI运算，很显然这种运算量在NPC数量较多的情况下，会消耗大量CPU时间。四叉树是一个解决这类问题的好办法，[云风的四叉树]，[四叉树碰撞优化]，[知乎上的讨论]。
-    ![Smaller icon](http://awalife.top/images/2/tree.png)
+    ![Smaller icon](http://amgoodlife.top/images/2/tree.png)
 4. 最粗暴的方式
    如果S端在本地，则可以将移动不再通过C/S的架构相互通讯，直接S端调用C端逻辑。提高了用户操作的感觉，却破坏了代码封装。值不值？
 

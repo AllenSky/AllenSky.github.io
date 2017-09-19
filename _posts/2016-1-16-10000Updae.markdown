@@ -7,7 +7,7 @@ tags: [Unity3D iOS Optimize]
 
 按照惯例先来一个我们游戏的宣传图
 
-![Smaller icon](http://awalife.top/images/6/guerdan.jpg) 
+![Smaller icon](http://amgoodlife.top/images/6/guerdan.jpg) 
 
 ----------------------
 Unity has so-called Messaging system which allows you to define a bunch of magic methods in your scripts which will be called at specific events while your game is running. This is a very simple and easy to understand concept especially good for new users. Just define an Update method like this and it will be called once a frame!
@@ -208,36 +208,36 @@ I used my mad Photoshop skills and color coded a few areas for you to better und
 
 >我用我牛逼的ps技术，加了点颜色让你们更加容易的理解。
 
-![Smaller icon](http://awalife.top/images/6/updates.png)
+![Smaller icon](http://amgoodlife.top/images/6/updates.png)
 
 
-![Smaller icon](http://awalife.top/images/6/pix11.png) UpdateBehavior.Update()
+![Smaller icon](http://amgoodlife.top/images/6/pix11.png) UpdateBehavior.Update()
 
 In the middle you see our Update method or how IL2CPP calls it — UpdateBehavior_Update_m18. But before getting there Unity does a lot of other things.
 
 >在中间，你能看到Update的方法或者IL2CPP如何调用它-UpdateBehavior_Update_m18。但是在Unity执行到这儿，做了非常多的事情。
 
 
-![Smaller icon](http://awalife.top/images/6/pix21.png) Iterate over all Behaviours
+![Smaller icon](http://amgoodlife.top/images/6/pix21.png) Iterate over all Behaviours
 
 Unity goes over all Behaviours to update them. Special iterator class, SafeIterator, ensures that nothing breaks if someone decides to delete the next item on the list. Just iterating over all registered Behaviours takes 1517ms out of total 9979ms.
 
 >Unity遍历所有的Behaviours去更新他们。有一个特别的枚举器类，安全枚举器，保证不会有一些情况下删除下一个元素后不会被中断。仅仅枚举所有注册的Behaviours花费总时间9979ms中的1517ms。
 
-![Smaller icon](http://awalife.top/images/6/pix31.png) Check if the call is valid
+![Smaller icon](http://amgoodlife.top/images/6/pix31.png) Check if the call is valid
 
 Next, Unity does a bunch of checks to make sure that it is calling a valid existing method on an active GameObject which has been initialized and its Start method called. You don’t want your game to crash if you destroy a GameObject during Update, do you? These checks take another 2188ms out of total 9979ms.
 
 >接下来，Unity做了很多检测以保证在一个活动的GameObject的update方法调用时是有效存在的，当然要保证初始化GameObject和调用他的Start函数。当你在Update销毁一个GameObject时，你不希望你的游戏会崩溃，对吧？这些花费了总时间9979ms中的2188ms
 
 
-![Smaller icon](http://awalife.top/images/6/pix41.png) Prepare to invoke the method
+![Smaller icon](http://amgoodlife.top/images/6/pix41.png) Prepare to invoke the method
 
 Unity creates an instance of ScriptingInvocationNoArgs (which represents a call from native side to managed side) together with ScriptingArguments and orders IL2CPP virtual machine to invoke the method (scripting_method_invoke function). This step takes 2061ms out of total 9979ms.
 
 >Unity创建了一个ScriptingInvocationNoArgs（它代表了一个从本地层到托管层的调用）和ScriptingArguments的实例，命令IL2CPP虚拟机去调用这个方法（就是scripting_method_invoke）。这步花费总时间9979ms中的2061ms。
 
-![Smaller icon](http://awalife.top/images/6/pix51.png) Call the method
+![Smaller icon](http://amgoodlife.top/images/6/pix51.png) Call the method
 
 scripting_method_invoke function checks that passed arguments are valid (900ms) and then calls Runtime::Invoke method of IL2CPP virtual machine (1520ms). First, Runtime::Invoke checks if such method exists (1018ms). Next, it calls a generated RuntimeInvoker function for method signature (283ms). It in turn calls our Update function which according to Time Profiler takes 42ms to execute.
 
@@ -245,7 +245,7 @@ scripting_method_invoke function checks that passed arguments are valid (900ms) 
 
 And a nice colorful table.
 
-![Smaller icon](http://awalife.top/images/6/table5.png) 
+![Smaller icon](http://amgoodlife.top/images/6/table5.png) 
 
 #MANAGED UPDATES
 
@@ -259,7 +259,7 @@ The next image uses the same colors.
 
 >下图使用了相同颜色来标识。  
 
-![Smaller icon](http://awalife.top/images/6/manager.png) 
+![Smaller icon](http://amgoodlife.top/images/6/manager.png) 
 
 So, what do you think now, should one care about a little method call?
 

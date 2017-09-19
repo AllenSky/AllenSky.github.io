@@ -25,15 +25,15 @@ Devirtualization is a common compiler optimization tactic which changes a virtua
 
 As a young developer, I learned about virtual methods with a rather contrived animal example. This code might be familiar to you as well:
 
-![Smaller icon](http://awalife.top/images/9/animal.png)
+![Smaller icon](http://amgoodlife.top/images/9/animal.png)
 
-![Smaller icon](http://awalife.top/images/9/farm.png)
+![Smaller icon](http://amgoodlife.top/images/9/farm.png)
 
 很常见的OO写法，对吧？我们来看看生成的C++代码怎么样。
 
 下图是foreach(var animal in animals) Debug.LogFormat(……, animal.Speak())的C++代码
 
-![Smaller icon](http://awalife.top/images/9/c_1.png)
+![Smaller icon](http://amgoodlife.top/images/9/c_1.png)
 
 It is going to lookup the proper virtual method in the vtable and then call it. This vtable lookup will be slower than a direct function call, but that is understandable. The Animal could be a Cow or a Pig, or some other derived type.
 
@@ -41,7 +41,7 @@ It is going to lookup the proper virtual method in the vtable and then call it. 
 
 下图是var cow = new Cow(); Debug.Logmat(…., cow.Speak());的C++代码
 
-![Smaller icon](http://awalife.top/images/9/c2.png)
+![Smaller icon](http://amgoodlife.top/images/9/c2.png)
 
 Even in this case we are still making the virtual method call! IL2CPP is pretty conservative with optimizations, preferring to ensure correctness in most cases. Since it does not do enough whole-program analysis to be sure that this can be a direct call, it opts for the safer (and slower) virtual method call.
 
@@ -51,13 +51,13 @@ Suppose we know that there are no other types of cows on our farm, so no type wi
 
 假如我们知道不在会有其他的Cow类型，所以就不会有Cow的派生类型。如果我们能把这个信息明确的告诉编译器，那么我们就能有更好的结果，我们可以这么定义：
 
-![Smaller icon](http://awalife.top/images/9/seal.png)
+![Smaller icon](http://amgoodlife.top/images/9/seal.png)
 
 The sealed keyword tells the compiler that no one can derive from Cow (sealed could also be used directly on the Speak method). Now IL2CPP will have the confidence to make a direct method call:
 
 sealed关键字编辑器没有任何派生类继承自Cow(sealed也可以在Speak方法上使用)。现在IL2CPP就能直接调用函数了。
 
-![Smaller icon](http://awalife.top/images/9/seal_c.png)
+![Smaller icon](http://amgoodlife.top/images/9/seal_c.png)
 
 The call to Speak here will not be unnecessarily slow, since we’ve been very explicit with the compiler and allowed it to optimize with confidence.
 
