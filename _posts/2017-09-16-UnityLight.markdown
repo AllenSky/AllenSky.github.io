@@ -135,13 +135,15 @@ Vertex Lit多数被用于固定管线Shader，所以不能通过代码逻辑来�
 
 ### **Forward Rendering**
 
-是绝大数引擎都含有的一种渲染方式。要使用Forward Rendering，一般在Vertex Shader或Fragment Shader阶段对每个顶点或每个像素进行光照计算，并且是对每个光源进行计算产生最终结果。下面是Forward Rendering的核心伪代码[1]。
+是绝大数引擎都含有的一种渲染方式。要使用Forward Rendering，一般在Vertex Shader或Fragment Shader阶段对每个顶点或每个像素进行光照计算，并且是对每个光源进行计算产生最终结果。下面是Forward Rendering的核心伪代码。
 
 ``` 
 	For each light: 
 		For each object affected by the light: 
 			framebuffer += object * light
 ```
+
+Forward Rendering渲染的复杂度大约可用O(num_geometry_fragments * num_lights)来表示，可以看出复杂度和集合体的面数还有光源的数量正相关。
 
 具体在Unity中，有它自己的实现规则：
 
@@ -198,3 +200,78 @@ Additional passes会逐步把影响这个物体的逐光照的灯渲染物体。
 
 
 ### Deferred Rendering
+
+不支持移动设备! 它需要：Multiple Render Targets(MRT), Shader Model 3.0(or later) and Depth render textures.
+
+When using deferred shading, there is no limit on the number of lights that can affect a GameObject. All lights are evaluated per-pixel, which means that they all interact correctly with normal maps, etc. Additionally, all lights can have cookies and shadows.
+
+使用*Deferred Rendering*就不会有照射物体光源数量的限制。对所有的光源都是逐像素渲染的，意味着都能使用normal maps.而且所有光源都能有cookies和阴影。
+
+**Note:** Deferred rendering is not supported when using Orthographic projection. If the Camera’s projection mode is set to Orthographic, the Camera falls back to Forward rendering.
+
+另外，需要注意的是：unity不支持在正交视角时设置Deferred rendering.如果在正交视角设置为延迟渲染，会被默认退化为Forward rendering.
+
+
+
+----------------------------------------- 插入 MRT的介绍 --------------------------------------------
+
+在介绍***MRT***之前，我们先谈一下**Frame Buffer Object**(***FBO***)，使用FBO的目的是：**将场景渲染到一个贴图上，而非显示屏**。
+
+具体来说在3D图形学中，不管我们在前期进行如何的处理，最终实际上都是要显示在屏幕上的。而在屏幕上显示的东西是一个一个的像素，也就是说必然存在一块内存，这块内存容纳了所有的屏幕上的像素点。在OpenGL中，默认情况下它最终输出到的地方是一个由系统自行创建管理的一块内存，我们称之为帧缓存（Frame Buffer）。而对于我们现在的要求，我们并不需要将最终处理完毕的数据输出到这个帧缓存中去，而是需要输入到一块由我们自己指定的缓存中去。这就是FBO需要使用的地方。
+
+​       当然，FBO的结构十分的复杂，它是各种缓存如Color Buffer, Depth Buffer, Stencil Buffer等等的集合。当我们不想要向系统默认的缓存中输出这些值的时候，我们就可以通过指定我们自己创建FBO，然后输出数据到指定的地方。
+
+​       同时需要注意的一点就是，FBO是各个缓存的集合，但并不是说我们指定了一个FBO，系统就会将各个Buffer的值输出到这个FBO中去。由于类似的的buffer有很多，但是在实际使用的过程中往往不需要全部都使用到，也就是说我们可以有选择的指定哪些buffer是我们想要的，然后通过FBO将这些buffer输出到指定的地方。所以FBO更像是一个过滤器，它会将用户指定的缓存发送到用户指定的地方去，如Texture或者Render Buffer。
+
+​       而指定到底要输出那些缓存以及要输出到什么地方的操作被称为Attachment（附加）。在FBO中存在这很多的附加点，我们只要将我们创建的用于容纳缓存的对象附加到FBO的指定附加点，那么就能够从那里接受到对应的缓存数据。
+
+有了这些知识我们就能实现**Render To Texture**(***RTT***)渲染到贴图上：
+
+​       第一步，我们要创建一个Frame Buffer Object
+
+​       第二步，创建一个Texture Object
+
+​       第三步，将Texture Object附加到Frame Buffer Object的Color Buffer附加点上
+
+​       第四步，绑定激活Frame Buffer Object作为输出目的地，正常绘制你要绘制的场景
+
+​       第五步，解除绑定Frame Buffer Object，绑定默认系统帧缓存，即Frame Buffer Object的ID为0的buffer，让系统buffer作为输出目的地
+
+​       第六步，绑定激活上面保存了场景渲染图的纹理，传递到Shader中去
+
+​       第七步，绘制一个和屏幕一样大小的四边形，并且在Shader中处理该纹理，然后输出到系统buffer中，从而显示出来。
+
+那么**Multiple Render Texture**(***MRT***)是直接使用***FBO***实现***RTT***的进化版本。MRT技术出现之前，我们要把实时渲染的内容输出到多个目标缓冲区时，必须针对每个缓冲输入draw命令，进行顶点变化之类的操作，这样会有很多冗余的操作，比如相同的顶点被传入多次。使用MRT技术，通过pixel shader，我们能够把图像输出到不同渲染缓冲区中，而使用的draw命令只有一次。***注意：缓冲一般用纹理texture表示***
+
+参考图展示了这一个过程：
+
+![img](http://amgoodlife.top/images/14/color_g_buffer.png)
+
+![img](http://amgoodlife.top/images/14/z-buffer.png)
+
+![img](http://amgoodlife.top/images/14/normal_g_buffer.png)
+
+![img](http://amgoodlife.top/images/14/finalcompositing.png)
+
+----------------------------------------- 完成 MRT的介绍 --------------------------------------------
+
+
+
+Deferred Rendering*（延迟渲染）顾名思义，就是将光照处理这一步骤延迟一段时间再处理。具体做法就是将光照处理这一步放在已经三维物体生成二维图片之后进行处理。也就是说将物空间的光照处理放到了像空间进行处理。要做到这一步，需要一个重要的辅助工具——**G-Buffer**。G-Buffer主要是用来存储每个像素对应的Position，Normal，Diffuse Color和其他Material parameters。根据这些信息，我们就可以在像空间中对每个像素进行光照处理。下面是Deferred Rendering的核心伪代码。
+
+```
+For each object:
+	Render to multiple targets 
+For each light:
+	Apply light as a 2D postprocess
+```
+
+Deferred Rendering的最大的优势就是将光源的数目和场景中物体的数目在复杂度层面上完全分开。The rendering overhead of realtime lights in deferred shading is proportional to the number of pixels illuminated by the light and *not* dependent on Scene complexity. 
+
+大约时间复杂度O(screen_resolution * num_lights)
+
+
+
+**\*G Buffer **- 指Geometry Buffer，亦即“物体缓冲”。区别于普通的仅将颜色渲染到纹理中，G-Buffer指包含颜色、法线、世界空间坐标的缓冲区，亦即指包含颜色、法线、世界空间坐标的纹理。由于G-Buffer需要的向量长度超出通常纹理能包含的向量的长度，通常在游戏开发中，使用多渲染目标技术来生成G-Buffer，即在一次绘制中将颜色、法线、世界空间坐标分别渲染到三张浮点纹理中。
+
+常见的做法是将颜色，深度和法线分别渲染到不同的buffer里面，在最后计算光照的时候的通过这三个buffer和光源的信息计算出最终pixel的颜色
