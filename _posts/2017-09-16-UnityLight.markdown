@@ -275,3 +275,26 @@ Deferred Rendering的最大的优势就是将光源的数目和场景中物体�
 **\*G Buffer **- 指Geometry Buffer，亦即“物体缓冲”。区别于普通的仅将颜色渲染到纹理中，G-Buffer指包含颜色、法线、世界空间坐标的缓冲区，亦即指包含颜色、法线、世界空间坐标的纹理。由于G-Buffer需要的向量长度超出通常纹理能包含的向量的长度，通常在游戏开发中，使用多渲染目标技术来生成G-Buffer，即在一次绘制中将颜色、法线、世界空间坐标分别渲染到三张浮点纹理中。
 
 常见的做法是将颜色，深度和法线分别渲染到不同的buffer里面，在最后计算光照的时候的通过这三个buffer和光源的信息计算出最终pixel的颜色
+
+## Implementation(Unity5)
+
+The default layout of the render targets (RT0 - RT4) in the geometry buffer (g-buffer) is listed below. Data types are placed in the various channels of each render target. The channels used are shown in parentheses.
+
+- RT0, ARGB32 format: Diffuse color (RGB), occlusion (A).
+- RT1, ARGB32 format: Specular color (RGB), roughness (A).
+- RT2, ARGB2101010 format: World space normal (RGB), unused (A).
+- RT3, ARGB2101010 (non-HDR) or ARGBHalf (HDR) format: Emission + lighting + lightmaps + reflection probes buffer.
+- Depth+Stencil buffer.
+
+So the default g-buffer layout is 160 bits/pixel (non-HDR) or 192 bits/pixel (HDR).
+
+关于***ARGB2101010: Color render texture format. 10 bits for colors, 2 bits for alpha.***
+
+如果使用 [Shadowmask](https://docs.unity3d.com/Manual/LightMode-Mixed-Shadowmask.html) or [Distance Shadowmask](https://docs.unity3d.com/Manual/LightMode-Mixed-DistanceShadowmask.html) modes for Mixed lighting, 第5个渲染缓存区被使用：
+
+- RT4, ARGB32 format: Light occlusion values (RGBA).
+
+And thus the g-buffer layout is 192 bits/pixel (non-HDR) or 224 bits/pixel (HDR)
+
+由此我们可以看出，使用Deferred Rendering 对显存的需求要大的多，对于一个普通的1024x768的屏幕分辨率。总共得使用1024x768x192bit(HDR or ShadowMask)=18MB
+
