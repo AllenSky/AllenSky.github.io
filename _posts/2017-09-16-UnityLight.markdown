@@ -6,6 +6,7 @@ tags: [Light Unity 3D]
 ---
 
 
+
 Unity5较之于Unity4有非常大提升，包括有Physically Based Shading(也有叫做Physically Based Rendering), 引进了Precomputed Realtime Global illumination(简称PRGI). 本文关注PRGI，如果想了解PBS(PBR)，请看这里。
 
 对于灯光，首先咱们要了解Lighting有哪些种类(Types of light)，这是最基础的部分：
@@ -59,6 +60,7 @@ Since an area light illuminates an object from several different directions at o
 
 **5.Emissive materials 自发光物质**
 ![image](http://amgoodlife.top/images/14/image1505558896_23281.png)
+
 Like area lights, emissive materials emit light across their surface area. They contribute to bounced light in your scene and associated properties such as color and intensity can be changed during gameplay. Whilst area lights are not supported by Precomputed Realtime GI, similar soft lighting effects in realtime are still possible using emissive materials.
 
 ‘Emission’ is a property of the Standard Shader which allows static objects in our scene to emit light. By default the value of ‘Emission’ is set to zero. This means no light will be emitted by objects assigned materials using the Standard Shader.
@@ -77,9 +79,9 @@ Ambient light is light that is present all around the scene and doesn’t come f
 
 
 
----------------------------------------------------------------- Rendering Path -----------------------------------------------------------------
+----------------------------------------------- Rendering Path ---------------------------------------------------
 
-**Rendering Path**
+## **Rendering Path**
 
 在进一步介绍Unity光照之前，还是有必要来了解一下：*Rendering Path*。所谓Rendering Path就是指在渲染场景中光照的渲染方式，目前Unity支持的有*Legacy Vertext Lit*(No Support for RealtimeShadows) ,*Forward Rendering*,*Deferred Rendering*(Not Supported by mobile)
 
@@ -89,22 +91,23 @@ Ambient light is light that is present all around the scene and doesn’t come f
 
 
 
-**Vertex lit**
+### **Vertex lit**
+
 Vertex Lit即顶点光照，顾名思义， 就是所有的光照计算都是在顶点进行的，因此所有的像素运算效果都不支持，如阴影，法线贴图，light cookies等。一个物体一般只有一个pass。效果最差，运行最快。适合老设备或者一般的移动设备。这里也需要注意下面：
 
 > ## Vertex Lit Rendering path
 >
 > **Since vertex lighting is most often used on platforms that do not support programmable shaders, Unity can't create multiple shader permutations internally to handle lightmapped vs. non-lightmapped cases. So to handle lightmapped and non-lightmapped objects, multiple passes have to be written explicitly.**
 >
-> - `Vertex` pass is used for non-lightmapped objects. All lights are rendered at once, using a fixed function OpenGL/Direct3D lighting model ([Blinn-Phong](http://en.wikipedia.org/wiki/Blinn-Phong_shading))
-> - `VertexLMRGBM` pass is used for lightmapped objects, when lightmaps are RGBM encoded (this happens on most desktops and consoles). No realtime lighting is applied; pass is expected to combine textures with a lightmap.
-> - `VertexLMM` pass is used for lightmapped objects, when lightmaps are double-LDR encoded (this happens on mobiles and old desktops). No realtime lighting is applied; pass is expected to combine textures with a lightmap.
+> - *Vertex* pass is used for non-lightmapped objects. All lights are rendered at once, using a fixed function OpenGL/Direct3D lighting model ([Blinn-Phong](http://en.wikipedia.org/wiki/Blinn-Phong_shading))
+> - *VertexLMRGBM* pass is used for lightmapped objects, when lightmaps are RGBM encoded (this happens on most desktops and consoles). No realtime lighting is applied; pass is expected to combine textures with a lightmap.
+> - *VertexLMM* pass is used for lightmapped objects, when lightmaps are double-LDR encoded (this happens on mobiles and old desktops). No realtime lighting is applied; pass is expected to combine textures with a lightmap.
 
 Vertex Lit多数被用于固定管线Shader，所以不能通过代码逻辑来处理带烘培贴图和不带烘培贴图的情况。Unity 在使用 Vertex lit 模式时无法在内部自动分别处理使用了光照图的对象和未使用的，所以需要作者自己显式的针对 Vertex, VertexLMRGBM, VertexLMM 这三个 LightMode 的 PassTag 分别写一个 Pass，以便适应没有光照图，以及使用了光照图但编码不同的情况。
 
 
 
------------------------------------- 插入Fixed Pipline和programmable Pipeline的介绍 -----------------------------------
+--------------------- 插入Fixed Pipline和programmable Pipeline的介绍 --------------------------
 
 另外这里还要进一步介绍一下固定管线和可编程管线的区别到底如何。
 
@@ -124,13 +127,13 @@ Vertex Lit多数被用于固定管线Shader，所以不能通过代码逻辑来�
 
 ![image](http://amgoodlife.top/images/14/ProgrammablePipline.jpg)
 
-------------------------------------结束Fixed Pipline和programmable Pipeline的介绍 -----------------------------------
+------------------结束Fixed Pipline和programmable Pipeline的介绍 --------------------------
 
 
 
 
 
-**Forward Rendering**
+### **Forward Rendering**
 
 是绝大数引擎都含有的一种渲染方式。要使用Forward Rendering，一般在Vertex Shader或Fragment Shader阶段对每个顶点或每个像素进行光照计算，并且是对每个光源进行计算产生最终结果。下面是Forward Rendering的核心伪代码[1]。
 
@@ -191,3 +194,7 @@ Base Pass使用一个逐像素的平行光和其他逐顶点或球调和的光�
 Additional passes are rendered for each additional per-pixel light that affect this object. Lights in these passes by default do not have shadows (so in result, Forward Rendering supports one directional light with shadows), unless *multi_compile_fwdadd_fullshadows* variant shortcut is used.
 
 Additional passes会逐步把影响这个物体的逐光照的灯渲染物体。默认情况下不会产生影子，除非开启*multi_compile_fwdadd_fullshadows*。
+
+
+
+### Deferred Rendering
